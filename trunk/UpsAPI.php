@@ -66,6 +66,16 @@ class UpsAPI {
 		$this->password = $GLOBALS['ups_api']['password'];
 		$this->username = $GLOBALS['ups_api']['username'];
 	} // end funciton __construct()
+	
+	/**
+	 * Send a request to the UPS Server
+	 * 
+	 * @params string $request_xml
+	 */
+	public function sendRequest($request_xml) {
+		$request = new HttpRequest($GLOBALS['ups_api']['server'], METH_POST);
+		$request->setPostFields(array('request' => $request_xml));
+	} // end function sendRequest()
 } // end class UpsAPI
 
 ?>
