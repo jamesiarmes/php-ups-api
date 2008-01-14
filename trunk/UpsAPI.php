@@ -68,13 +68,18 @@ class UpsAPI {
 	} // end funciton __construct()
 	
 	/**
-	 * Send a request to the UPS Server
+	 * Send a request to the UPS Server using xmlrpc
 	 * 
 	 * @params string $request_xml
 	 */
 	public function sendRequest($request_xml) {
-		$request = new HttpRequest($GLOBALS['ups_api']['server'], METH_POST);
-		$request->setPostFields(array('request' => $request_xml));
+		$context = stream_context_create(array(
+			'http' => array(
+				'method' => 'POST',
+				'header' => 'Content-Type: text/xml',
+				'content' => $request_xml,
+			),
+		));
 	} // end function sendRequest()
 } // end class UpsAPI
 
