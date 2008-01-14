@@ -12,7 +12,7 @@
  * @author James I. Armes <jamesiarmes@gmail.com>
  * @package php_ups_api
  */
-class UpsAPI_Tracking {
+class UpsAPI_Tracking extends UpsAPI {
 	/**
 	 * Tracking number that we are requesting data about
 	 * 
@@ -38,7 +38,28 @@ class UpsAPI_Tracking {
 	 * @access protected
 	 */
 	protected function buildRequest() {
-		$dom = new DOMDocument('1.0');
+		$return_value =
+			'<?xml version="1.0"?>'."\n".
+			'<AccessRequest xml:lang="en-US">'."\n".
+  			'	<AccessLicenseNumber>'.$this->access_key.
+  				'</AccessLicenseNumber>'."\n".
+  			'	<UserId>'.$this->username.'</UserId>'."\n".
+  			'	<Password>'.$this->password.'</Password>'."\n".
+  			'</AccessRequest>'."\n".
+			'<?xml version="1.0"?>'."\n".
+			'<TrackRequest xml:lang="en-US">'."\n".
+			'	<Request>'."\n".
+			'		<TransactionReference>'."\n".
+			'			<CustomerContext>QAST Track</CustomerContext>'."\n".
+			'			<XpciVersion>1.0001</XpciVersion>'."\n".
+			'		</TransactionReference>'."\n".
+			'		<RequestAction>Track</RequestAction>'."\n".
+			'		<RequestOption>activity</RequestOption>'."\n".
+			'	</Request>'."\n".
+			'	<TrackingNumber>'.$this->tracking_number.'</TrackingNumber>'."\n".
+			'</TrackRequest>';
+		
+		return $return_value;
 	} // end function buildRequest()
 } // end class UpsAPI_Tracking
 
