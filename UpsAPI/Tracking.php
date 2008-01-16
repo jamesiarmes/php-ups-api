@@ -7,6 +7,10 @@
  */
 
 /**
+ * Include the configuration file
+ */
+
+/**
  * Handles the sending, receiving, and processing of tracking data
  * 
  * @author James I. Armes <jamesiarmes@gmail.com>
@@ -29,15 +33,17 @@ class UpsAPI_Tracking extends UpsAPI {
 	public function __construct($tracking_number) {
 		parent::__construct();
 		
+		// set object properties
+		$this->server = $GLOBALS['ups_api']['server'].'/ups.app/xml/Track';
 		$this->tracking_number = $tracking_number;
 	} // end function __construct()
 	
 	/**
 	 * Builds the XML used to make the request
 	 * 
-	 * @access protected
+	 * @access public
 	 */
-	protected function buildRequest() {
+	public function buildRequest() {
 		$return_value =
 			'<?xml version="1.0"?>'."\n".
 			'<AccessRequest xml:lang="en-US">'."\n".
