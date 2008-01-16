@@ -10,7 +10,7 @@
 /**
  * Include the configuration file
  */
-require_once 'config.php';
+require_once 'inc/config.php';
 
 /**
  * Parent class for the UpsAPI
@@ -44,6 +44,14 @@ class UpsAPI {
 	protected $password;
 	
 	/**
+	 * UPS Server to send Request to
+	 * 
+	 * @param string
+	 * @access protected
+	 */
+	protected $server;
+	
+	/**
 	 * Username used to access UPS Systems
 	 * 
 	 * @param string
@@ -70,9 +78,12 @@ class UpsAPI {
 	/**
 	 * Send a request to the UPS Server using xmlrpc
 	 * 
-	 * @params string $request_xml
+	 * @params string $request_xml XML request from the child objects
+	 * buildRequest() method
+	 * @params boool $return_raw_xml whether or not to return the raw XML from
+	 * the request
 	 */
-	public function sendRequest($request_xml) {
+	public function sendRequest($request_xml, $return_raw_xml = false) {
 		$context = stream_context_create(array(
 			'http' => array(
 				'method' => 'POST',
@@ -80,6 +91,13 @@ class UpsAPI {
 				'content' => $request_xml,
 			),
 		));
+		$response = file_get_contents($this->server, false, $context);
+		
+		// check if we should return the raw XML data
+		if ($return_raw_xml)
+		{
+			return $response;
+		} // end if we should return the raw XML
 	} // end function sendRequest()
 } // end class UpsAPI
 
