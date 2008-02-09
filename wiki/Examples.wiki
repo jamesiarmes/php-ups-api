@@ -1,7 +1,7 @@
-#summary One-sentence summary of this page.
+#summary Examples of how to use the PHP UPS API
 #labels Featured
 
-=Usage Exaples=
+=Usage Examples=
 
 *Tracking Example* - With Customer Name
 {{{
