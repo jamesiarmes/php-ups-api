@@ -14,6 +14,7 @@
 $GLOBALS['autoload_paths'] = array(
 	BASE_PATH,
 	BASE_PATH.'/inc',
+	BASE_PATH.'/inc/pear',
 );
 
 /**

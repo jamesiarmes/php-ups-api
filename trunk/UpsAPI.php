@@ -98,6 +98,13 @@ class UpsAPI {
 		{
 			return $response;
 		} // end if we should return the raw XML
+		
+		// create an array from the raw XML data
+		require_once 'XML/Unserializer.php';
+		$unserializer = new XML_Unserializer(array('returnResult' => true));
+		$response = $unserializer->unserialize($response);
+		
+		return $response;
 	} // end function sendRequest()
 } // end class UpsAPI
 
