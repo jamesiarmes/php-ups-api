@@ -1,0 +1,28 @@
+#summary One-sentence summary of this page.
+#labels Featured
+
+=Usage Exaples=
+
+*Tracking Example* - With Customer Name
+{{{
+$tracking = new UpsAPI_Tracking($tracking_number);
+$xml = $tracking->buildRequest('Customer Name');
+
+// returns an array
+$response = $tracking->sendRequest($xml, false);
+}}}
+
+*Tracking Example* - With Customer Data Array
+{{{
+$customer_data = array(
+    'CustomerName' => 'Test Customer',
+    'Product' => 'Ebay Shipment Tracker 2.0',
+    'Location' => 'Camp Hill, PA',
+); // end $customer_data
+
+$tracking = new UpsAPI_Tracking($tracking_number);
+$xml = $tracking->buildRequest('Customer Name');
+
+// returns XML
+$response = $tracking->sendRequest($xml, true);
+}}}
