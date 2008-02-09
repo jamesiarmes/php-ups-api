@@ -41,29 +41,82 @@ class UpsAPI_Tracking extends UpsAPI {
 	/**
 	 * Builds the XML used to make the request
 	 * 
+	 * If $customer_context is an array it should be in the format:
+	 * $customer_context = array('Element' => 'Value');
+	 * 
 	 * @access public
+	 * @param array|string $cutomer_context customer data
+	 * @return string $return_value request XML
 	 */
-	public function buildRequest() {
-		$return_value =
-			'<?xml version="1.0"?>'."\n".
-			'<AccessRequest xml:lang="en-US">'."\n".
-  			'	<AccessLicenseNumber>'.$this->access_key.
-  				'</AccessLicenseNumber>'."\n".
-  			'	<UserId>'.$this->username.'</UserId>'."\n".
-  			'	<Password>'.$this->password.'</Password>'."\n".
-  			'</AccessRequest>'."\n".
-			'<?xml version="1.0"?>'."\n".
-			'<TrackRequest xml:lang="en-US">'."\n".
-			'	<Request>'."\n".
-			'		<TransactionReference>'."\n".
-			'			<CustomerContext>QAST Track</CustomerContext>'."\n".
-			'			<XpciVersion>1.0001</XpciVersion>'."\n".
-			'		</TransactionReference>'."\n".
-			'		<RequestAction>Track</RequestAction>'."\n".
-			'		<RequestOption>activity</RequestOption>'."\n".
-			'	</Request>'."\n".
-			'	<TrackingNumber>'.$this->tracking_number.'</TrackingNumber>'."\n".
-			'</TrackRequest>';
+	public function buildRequest($customer_context = null)
+	{
+		/** create DOMDocument objects **/
+		$acces_dom = new DOMDocument('1.0');
+		$track_dom = new DOMDocument('1.0');
+		
+		
+		/** create the AccessRequest element **/
+		$access_element = $acces_dom->appendChild(new DOMElement('AccessRequest'));
+		$access_element->setAttributeNode(new DOMAttr('xml:lang', 'en-US'));
+		
+		// creat the child elements
+		$access_element->appendChild(
+			new DOMElement('AccessLicenseNumber', $this->access_key));
+		$access_element->appendChild(
+			new DOMElement('UserId', $this->username));
+		$access_element->appendChild(
+			new DOMElement('Password', $this->password));
+		
+		
+		/** create the TrackRequest element **/
+		$track_element = $track_dom->appendChild(new DOMElement('TrackRequest'));
+		$track_element->setAttributeNode(new DOMAttr('xml:lang', 'en-US'));
+			
+		// create the child elements
+		$request_element = $track_element->appendChild(
+			new DOMElement('Request'));
+		$track_element->appendChild(
+			new DOMElement('TrackingNumber', $this->tracking_number));
+		
+		// create the children of the Request element
+		$transaction_element = $request_element->appendChild(
+			new DOMElement('TransactionReference'));
+		$request_element->appendChild(
+			new DOMElement('RequestAction', 'Track'));
+		$request_element->appendChild(
+			new DOMElement('RequestOption', 'activity'));
+		
+		// create the children of the TransactionReference element
+		$transaction_element->appendChild(
+			new DOMElement('XpciVersion', '1.0001'));
+		
+		// check if we have customer data to include
+		if (!empty($customer_context))
+		{
+			if (is_array($customer_context))
+			{
+				$customer_element = $transaction_element->appendChild(
+					new DOMElement('CustomerContext'));
+
+				// iterate over the array of customer data
+				foreach ($customer_context as $element => $value)
+				{
+					$customer_element->appendChild(
+						new DOMElement($element, $value));
+				} // end for each customer data
+			} // end if the customer data is an array
+			else
+			{
+				$transaction_element->appendChild(
+					new DOMElement('CustomerContext', $customer_context));
+			} // end if the customer data is a string
+		} // end if we have customer data to include
+		
+		
+		/** generate the XML **/
+		$access_xml = $acces_dom->saveXML();
+		$track_xml = $track_dom->saveXML();
+		$return_value = $access_xml.$track_xml;
 		
 		return $return_value;
 	} // end function buildRequest()
