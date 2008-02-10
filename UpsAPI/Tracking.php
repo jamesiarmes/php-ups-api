@@ -56,7 +56,8 @@ class UpsAPI_Tracking extends UpsAPI {
 		
 		
 		/** create the AccessRequest element **/
-		$access_element = $acces_dom->appendChild(new DOMElement('AccessRequest'));
+		$access_element = $acces_dom->appendChild(
+			new DOMElement('AccessRequest'));
 		$access_element->setAttributeNode(new DOMAttr('xml:lang', 'en-US'));
 		
 		// creat the child elements
@@ -69,7 +70,8 @@ class UpsAPI_Tracking extends UpsAPI {
 		
 		
 		/** create the TrackRequest element **/
-		$track_element = $track_dom->appendChild(new DOMElement('TrackRequest'));
+		$track_element = $track_dom->appendChild(
+			new DOMElement('TrackRequest'));
 		$track_element->setAttributeNode(new DOMAttr('xml:lang', 'en-US'));
 			
 		// create the child elements
@@ -120,6 +122,104 @@ class UpsAPI_Tracking extends UpsAPI {
 		
 		return $return_value;
 	} // end function buildRequest()
+	
+	/**
+	 * Gets the number of packages related to the tracking number
+	 * 
+	 * @return integer $return_value number of packages for this tracking number
+	 */
+	public function getNumberOfPackages()
+	{
+		$return_value = count(
+			$this->response_array['Shipment']['Package']['Activity']);
+		
+		return $return_value;
+	} // end function getNumberOfPackages()
+	
+	/**
+	 * Gets the status of all packages
+	 * 
+	 * @return array $return_value status of each package
+	 */
+	public function getPackageStatus()
+	{
+		$return_value = array();
+		
+		// iterate over the packages and create a status array for each
+		$packages = $this->response_array['Shipment']['Package']['Activity'];
+		foreach ($packages as $key => $current_package)
+		{
+			$status_type = $current_package['Status']['StatusType'];
+			$return_value[$key] = array(
+				'code' => $status_type['Code'],
+				'description' => $status_type['Description'],
+			); // end $return_value[$key]
+		} // end for each package
+		
+		return $return_value;
+	} // end function getPackageStatus()
+	
+	/**
+	 * Gets the shipping address of the package(s)
+	 * 
+	 * @return array $return_value array of address information
+	 */
+	public function getShippingAddress()
+	{
+		$return_value = array();
+		
+		// get the address and iterate over its parts
+		$address = $this->response_array['Shipment']['ShipTo']['Address'];
+		foreach($address as $key => $address_part)
+		{
+			// check which address part this is
+			switch ($key)
+			{
+				case 'AddressLine1':
+					
+					$return_value['address1'] = $address_part;
+					break;
+					
+				case 'AddressLine2':
+					
+					$return_value['address2'] = $address_part;
+					break;
+					
+				case 'City':
+					
+					$return_value['city'] = $address_part;
+					break;
+					
+				case 'StateProvinceCode':
+					
+					$return_value['state'] = $address_part;
+					break;
+					
+				case 'PostalCode':
+					
+					$return_value['zip_code'] = $address_part;
+					break;
+					
+				case 'CountryCode':
+					
+					$return_value['country'] = $address_part;
+					break;
+					
+				default:
+					
+					$return_value[$key] = $address_part;
+					break;
+					
+			} // end switch ($key)
+		} // end for each address part
+		
+		return $return_value;
+	} // end function getShippingAddress()
+	
+	public function getShippingMenthod()
+	{
+		
+	} // end function getShippingMenthod()
 } // end class UpsAPI_Tracking
 
 ?>

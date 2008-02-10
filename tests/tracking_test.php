@@ -17,6 +17,9 @@ if (!empty($_POST['submit']))
 	{
 		$response = $tracking->sendRequest($xml, false);
 		var_dump($response);
+		var_dump($tracking->getNumberOfPackages());
+		var_dump($tracking->getPackageStatus());
+		var_dump($tracking->getShippingAddress());
 	} // end if the output type is an array
 	else
 	{
