@@ -39,6 +39,34 @@ class UpsAPI_Tracking extends UpsAPI {
 	} // end function __construct()
 	
 	/**
+	 * Gets the current tracking number for the object
+	 * 
+	 * @return string the current tracking numbet
+	 */
+	public function getTrackingNumber()
+	{
+		return $this->tracking_number;
+	} // end function getTrackingNumber()
+	
+	/**
+	 * Sets a new tracking number for the object
+	 * 
+	 * @param string $value numeric tracking number
+	 * @return bool whether or not a new value was set
+	 */
+	public function setTrackingNumber($value)
+	{
+		if (is_numeric($value))
+		{
+			$this->tracking_number = $value;
+			
+			return true;
+		} // end if the value is not numberic
+		
+		return false;
+	} // sets a new tracking number
+	
+	/**
 	 * Builds the XML used to make the request
 	 * 
 	 * If $customer_context is an array it should be in the format:
@@ -216,9 +244,23 @@ class UpsAPI_Tracking extends UpsAPI {
 		return $return_value;
 	} // end function getShippingAddress()
 	
-	public function getShippingMenthod()
+	/**
+	 * Gets the method used to ship the package(s)
+	 * 
+	 * @return array $return_value array of information about the shipping
+	 * method
+	 */
+	public function getShippingMethod()
 	{
+		$service = $this->response_array['Shipment']['Service'];
 		
+		// create the array of shipping information
+		$return_value = array(
+			'code' => $service['Code'],
+			'description' => $service['Description''],
+		); // end $return_value
+		
+		return $return_value;
 	} // end function getShippingMenthod()
 } // end class UpsAPI_Tracking
 
