@@ -4,6 +4,8 @@
  */
 require_once '../inc/config.php';
 
+echo '<img src="ups_logo.gif" /><br />';
+
 // check if the form was submitted
 if (!empty($_POST['submit']))
 {
@@ -16,17 +18,24 @@ if (!empty($_POST['submit']))
 	if ($_POST['output'] == 'array')
 	{
 		$response = $tracking->sendRequest($xml, false);
+		echo 'Response Output:<br />';
 		var_dump($response);
-		var_dump($tracking->getNumberOfPackages());
-		var_dump($tracking->getPackageStatus());
-		var_dump($tracking->getShippingAddress());
 	} // end if the output type is an array
 	else
 	{
 		$response = $tracking->sendRequest($xml, true);
+		echo 'Response Output:<br />';
 		echo '<pre>'.htmlentities($response).'</pre>';
 	} // end else the output type is XML
 	
+	echo 'UpsAPI_Tracking::getNumberOfPackages() Output:<br />';
+	var_dump($tracking->getNumberOfPackages());
+	echo 'UpsAPI_Tracking::getPackageStatus() Output:<br />';
+	var_dump($tracking->getPackageStatus());
+	echo 'UpsAPI_Tracking::getShippingAddress() Output:<br />';
+	var_dump($tracking->getShippingAddress());
+	echo 'UpsAPI_Tracking::getShippingMethod() Output:<br />';
+	var_dump($tracking->getShippingMethod());
 } // end if the form has been submitted
 else
 {
