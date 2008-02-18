@@ -7,10 +7,6 @@
  */
 
 /**
- * Include the configuration file
- */
-
-/**
  * Handles the sending, receiving, and processing of tracking data
  * 
  * @author James I. Armes <jamesiarmes@gmail.com>
@@ -20,8 +16,8 @@ class UpsAPI_Tracking extends UpsAPI {
 	/**
 	 * Tracking number that we are requesting data about
 	 * 
-	 * @param string
 	 * @access protected
+	 * @param string
 	 */
 	protected $tracking_number;
 	
@@ -29,6 +25,7 @@ class UpsAPI_Tracking extends UpsAPI {
 	 * Constructor for the Object
 	 * 
 	 * @access public
+	 * @param string $tracking_number number of the pacaage(s) we are tracking
 	 */
 	public function __construct($tracking_number) {
 		parent::__construct();
@@ -41,7 +38,8 @@ class UpsAPI_Tracking extends UpsAPI {
 	/**
 	 * Gets the current tracking number for the object
 	 * 
-	 * @return string the current tracking numbet
+	 * @access public
+	 * @return string the current tracking number
 	 */
 	public function getTrackingNumber()
 	{
@@ -51,18 +49,14 @@ class UpsAPI_Tracking extends UpsAPI {
 	/**
 	 * Sets a new tracking number for the object
 	 * 
+	 * @access public
 	 * @param string $value numeric tracking number
 	 * @return bool whether or not a new value was set
 	 */
 	public function setTrackingNumber($value)
 	{
-		if (is_numeric($value))
-		{
-			$this->tracking_number = $value;
+		$this->tracking_number = $value;
 			
-			return true;
-		} // end if the value is not numberic
-		
 		return false;
 	} // sets a new tracking number
 	
@@ -154,6 +148,7 @@ class UpsAPI_Tracking extends UpsAPI {
 	/**
 	 * Gets the number of packages related to the tracking number
 	 * 
+	 * @access public
 	 * @return integer $return_value number of packages for this tracking number
 	 */
 	public function getNumberOfPackages()
@@ -167,6 +162,7 @@ class UpsAPI_Tracking extends UpsAPI {
 	/**
 	 * Gets the status of all packages
 	 * 
+	 * @access public
 	 * @return array $return_value status of each package
 	 */
 	public function getPackageStatus()
