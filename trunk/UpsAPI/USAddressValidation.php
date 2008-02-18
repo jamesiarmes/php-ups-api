@@ -226,6 +226,60 @@ class UpsAPI_USAddressValidation extends UpsAPI {
 		
 		return $return_value;
 	} // end function buildRequest()
+	
+	/**
+	 * Returns the type of response
+	 * 
+	 * @access public
+	 * @return string $return_value whether or not a full or partial match was
+	 * found
+	 */
+	public function getResponseType()
+	{
+		// check if we received any matched
+		if (!isset($this->response_array['AddressValidationResult']))
+		{
+			return 'None';
+		} // end if we received no matches
+		
+		$result_array = $this->response_array['AddressValidationResult'];
+		
+		switch ($result_array)
+		{
+			case isset($result_array['Quality'])
+				&& $result_array['Quality'] == '1.0':
+				
+				$return_value = 'Exact';
+				break;
+				
+			case isset($result_array['Quality']):
+				
+				$return_value = 'Partial';
+				break;
+			
+			case sizeof($result_array) > 1:
+				
+				// iterate over the results to see if we have an exact match
+				foreach ($result_array as $result)
+				{
+					if ($result['Quality'] == '1.0')
+					{
+						$return_value = 'Multiple With Exact';
+						break(2);
+					} // end if the match is an exact
+				} // end for each result
+				
+				$return_value = 'Multiple Partial';
+				break;
+			
+			default:
+				
+				$return_value = false;
+				break;
+		} // end switch ($result_array)
+		
+		return $return_value;
+	} // end function getResponseType()
 } // end class UpsAPI_USAddressValidation
 
 ?>

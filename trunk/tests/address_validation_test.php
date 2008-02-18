@@ -29,6 +29,9 @@ if (!empty($_POST['submit']))
 		echo 'Response Output:<br />';
 		echo '<pre>'.htmlentities($response).'</pre>';
 	} // end else the output type is XML
+	
+	echo 'UpsAPI_USAddressValidation::getResponseType() Output:<br />';
+	var_dump($validation->getResponseType());
 } // end if the form has been submitted
 else
 {
