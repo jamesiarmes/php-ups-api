@@ -228,13 +228,71 @@ class UpsAPI_USAddressValidation extends UpsAPI {
 	} // end function buildRequest()
 	
 	/**
-	 * Returns the type of response
+	 * Gets any matches from the response including their rank and quality
+	 * 
+	 * @access public
+	 * @param string $match_type type of match returned by getMatchType()
+	 * @return array $return_value array of matches
+	 */
+	public function getMatches($match_type = null)
+	{
+		$return_value = array();
+		
+		// check if a valid match type was passed in
+		$valid_match = $this->validateMatchType($match_type);
+		if (empty($match_type))
+		{
+			$match_type = $this->getMatchType();
+		} // end if no valid match type was passed in
+		
+		// check if there are any matches
+		if ($match_type == 'None')
+		{
+			return $return_value;
+		} // end if there are not matches
+		
+		// check if we only have one match
+		$match_array = $this->response_array['AddressValidationResult'];
+		if (!isset($match_array[0]))
+		{
+			$return_value[0] = array(
+				'quality' => $match_array['Quality'],
+				'address' => array(
+					'city' => $match_array['Address']['City'],
+					'state' => $match_array['Address']['StateProvinceCode'],
+				),
+				'zip_code_low' => $match_array['PostalCodeLowEnd'],
+				'zip_code_high' => $match_array['PostalCodeHighEnd'],
+			); // end $return_value
+		} // end if we only have one match
+		else
+		{
+			// iterate over the matches
+			foreach ($match_array as $current_match)
+			{
+				$return_value[] = array(
+					'quality' => $current_match['Quality'],
+					'address' => array(
+						'city' => $current_match['Address']['City'],
+						'state' => $current_match['Address']['StateProvinceCode'],
+					),
+					'zip_code_low' => $current_match['PostalCodeLowEnd'],
+					'zip_code_high' => $current_match['PostalCodeHighEnd'],
+				); // end $return_value
+			} // end for each match
+		} // end if we have multiple matches
+		
+		return $return_value;
+	} // end function getMatches()
+	
+	/**
+	 * Returns the type of match(s)
 	 * 
 	 * @access public
 	 * @return string $return_value whether or not a full or partial match was
 	 * found
 	 */
-	public function getResponseType()
+	public function getMatchType()
 	{
 		// check if we received any matched
 		if (!isset($this->response_array['AddressValidationResult']))
@@ -242,25 +300,24 @@ class UpsAPI_USAddressValidation extends UpsAPI {
 			return 'None';
 		} // end if we received no matches
 		
-		$result_array = $this->response_array['AddressValidationResult'];
-		
-		switch ($result_array)
+		$match_array = $this->response_array['AddressValidationResult'];
+		switch ($match_array)
 		{
-			case isset($result_array['Quality'])
-				&& $result_array['Quality'] == '1.0':
+			case isset($match_array['Quality'])
+				&& $match_array['Quality'] == '1.0':
 				
 				$return_value = 'Exact';
 				break;
 				
-			case isset($result_array['Quality']):
+			case isset($match_array['Quality']):
 				
 				$return_value = 'Partial';
 				break;
 			
-			case sizeof($result_array) > 1:
+			case sizeof($match_array) > 1:
 				
 				// iterate over the results to see if we have an exact match
-				foreach ($result_array as $result)
+				foreach ($match_array as $result)
 				{
 					if ($result['Quality'] == '1.0')
 					{
@@ -276,10 +333,26 @@ class UpsAPI_USAddressValidation extends UpsAPI {
 				
 				$return_value = false;
 				break;
-		} // end switch ($result_array)
+		} // end switch ($match_array)
 		
 		return $return_value;
-	} // end function getResponseType()
+	} // end function getMatchType()
+	
+	/**
+	 * Checks a match type to see if it is valid
+	 * 
+	 * @access protected
+	 * @param string $match_type match type to validate
+	 * @return bool whether or not the match type is valid
+	 */
+	protected function validateMatchType($match_type)
+	{
+		// declare the valid match types
+		$valid_match_types = array('Exact', 'None', 'Partial',
+			'Multiple With Exact', 'Multiple Partial');
+		
+		return in_array($match_type, $valid_match_types);
+	} // end function validateMatchType()
 } // end class UpsAPI_USAddressValidation
 
 ?>
