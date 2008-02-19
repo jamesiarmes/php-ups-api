@@ -12,6 +12,7 @@ $xml = $tracking->buildRequest('Customer Name');
 $response = $tracking->sendRequest($xml, false);
 }}}
 
+=== ===
 *Tracking Example* - With Customer Data Array
 {{{
 $customer_data = array(
@@ -27,7 +28,7 @@ $xml = $tracking->buildRequest($customer_data);
 $response = $tracking->sendRequest($xml, true);
 }}}
 
-
+=== ===
 *getNumberOfPackages()* - To get the number of packages:
 {{{
 $tracking = new UpsAPI_Tracking($tracking_number);
@@ -41,7 +42,7 @@ Returns an integer:
 2
 }}}
 
-
+=== ===
 *getPackageStatus()* - To get the status of each package:
 {{{
 $tracking = new UpsAPI_Tracking($tracking_number);
@@ -61,4 +62,40 @@ array
     array
       'code' => 'M'
       'description' => 'BILLING INFORMATION RECEIVED. SHIPMENT DATE PENDING.'
+}}}
+
+=== ===
+*getShippingAddress()* - To get the package(s)' shipping address
+{{{
+$tracking = new UpsAPI_Tracking($tracking_number);
+$xml = $tracking->buildRequest($customer_data);
+
+$tracking->sendRequest($xml, true);
+$shipping_address = $tracking->getShippingAddress();
+}}}
+Returns an array:
+{{{
+array
+  'address1' => 'SAMPLE CONSIGNEE'
+  'address2' => '1307 PEACHTREE STREET'
+  'city' => 'ANYTOWN'
+  'state' => 'GA'
+  'zip_code' => '30340'
+  'country' => 'US'
+}}}
+
+=== ===
+*getShippingMethod()* - To get the shipping method of the package(s)
+{{{
+$tracking = new UpsAPI_Tracking($tracking_number);
+$xml = $tracking->buildRequest($customer_data);
+
+$tracking->sendRequest($xml, true);
+$shipping_method = $tracking->getShippingMethod();
+}}}
+Returns an array:
+{{{
+array
+  'code' => '002'
+  'description' => '2ND DAY AIR'
 }}}
