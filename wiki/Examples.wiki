@@ -27,7 +27,8 @@ $xml = $tracking->buildRequest($customer_data);
 $response = $tracking->sendRequest($xml, true);
 }}}
 
-To get the number of packages:
+
+*getNumberOfPackages()* - To get the number of packages:
 {{{
 $tracking = new UpsAPI_Tracking($tracking_number);
 $xml = $tracking->buildRequest($customer_data);
@@ -40,7 +41,8 @@ Returns an integer:
 2
 }}}
 
-To get the status of each package:
+
+*getPackageStatus()* - To get the status of each package:
 {{{
 $tracking = new UpsAPI_Tracking($tracking_number);
 $xml = $tracking->buildRequest($customer_data);
@@ -48,7 +50,7 @@ $xml = $tracking->buildRequest($customer_data);
 $tracking->sendRequest($xml, true);
 $status_array = $tracking->getPackageStatus();
 }}}
-Returns an array
+Returns an array:
 {{{
 array
   0 => 
