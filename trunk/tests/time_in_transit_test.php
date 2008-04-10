@@ -26,6 +26,7 @@ if (!empty($_POST['submit']))
 			'state' => $_POST['destination_state'],
 			'zip_code' => $_POST['destination_zip_code'],
 			),
+		'pickup_date' => '',
 	); // end $data
 	
 	$validation = new UpsAPI_TimeInTransit($data);
