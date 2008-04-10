@@ -139,6 +139,7 @@ else
 		<input type="submit" />
 	</td>
 </tr>
+</table>
 </form>
 <?php
 } // end else the form has not been submitted
