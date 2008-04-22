@@ -9,39 +9,43 @@ echo '<img src="ups_logo.gif" /><br />';
 // check if the form was submitted
 if (!empty($_POST['submit']))
 {
+	$origin = array(
+		'name' => $_POST['origin_name'],
+		'street_number' => $_POST['origin_street_number'],
+		'street' => $_POST['origin_street'],
+		'street_type' => $_POST['origin_street_type'],
+		'city' => $_POST['origin_city'],
+		'state' => $_POST['origin_state'],
+		'zip_code' => $_POST['origin_zip_code'],
+		'country' => $_POST['origin_country'],
+	); // end $origin
+	$destination = array(
+		'name' => $_POST['destination_name'],
+		'street_number' => $_POST['destination_street_number'],
+		'street' => $_POST['destination_street'],
+		'street_type' => $_POST['destination_street_type'],
+		'city' => $_POST['destination_city'],
+		'state' => $_POST['destination_state'],
+		'zip_code' => $_POST['destination_zip_code'],
+		'country' => $_POST['destination_country'],
+	); // end $destination
 	$data = array(
-		'origin' => array(
-			'name' => $_POST['origin_name'],
-			'street1' => $_POST['origin_street1'],
-			'street2' => $_POST['origin_street2'],
-			'city' => $_POST['origin_city'],
-			'state' => $_POST['origin_state'],
-			'zip_code' => $_POST['origin_zip_code'],
-			),
-		'destination' => array(
-			'name' => $_POST['destination_name'],
-			'street1' => $_POST['destination_street1'],
-			'street2' => $_POST['destination_street2'],
-			'city' => $_POST['destination_city'],
-			'state' => $_POST['destination_state'],
-			'zip_code' => $_POST['destination_zip_code'],
-			),
 		'pickup_date' => $_POST['pickup_date'],
 		'max_list_size' => $_POST['max_list_size'],
 		'invoice' => array(
 			'currency_code' => $_POST['currency_code'],
 			'monetary_value' => $_POST['monetary_value'],
-		),
+		), // end pickup_date
 		'weight' => array(
 			'unit_of_measure' => array(
 				'code' => $_POST['weight_um'],
 				'desc' => $_POST['weight_desc'],
-			),
+			), // end unit_of_measure
 			'weight' => $_POST['weight'],
-		),
+		), // end weight
 	); // end $data
 	
-	$validation = new UpsAPI_TimeInTransit($data);
+	$validation = new UpsAPI_TimeInTransit($origin, $destination, $data);
 	$xml = $validation->buildRequest();
 	
 	// check the output type
@@ -75,37 +79,50 @@ else
 	</td>
 	<td>
 		<input type="text" name="origin_name" id="origin_name" size="25"
-			value="Camp Hill" />
+			value="Joe Schmoe" />
 	</td>
 	<td>
 		<input type="text" name="destination_name" id="destination_name"
-			size="25" value="Camp Hill" />
+			size="25" value="Jane Doe" />
 	</td>
 </tr>
 <tr>
 	<td>
-		<label for="origin_street1">Street 1: </label>
+		<label for="origin_street_number">Street Number: </label>
 	</td>
 	<td>
-		<input type="text" name="origin_street1" id="origin_street1" size="25"
-			value="Camp Hill" />
+		<input type="text" name="origin_street_number" id="origin_street_number" size="25"
+			value="463" />
 	</td>
 	<td>
-		<input type="text" name="destination_street1" id="destination_street1"
-			size="25" value="Camp Hill" />
+		<input type="text" name="destination_street_number" id="destination_street_number"
+			size="25" value="8400" />
 	</td>
 </tr>
 <tr>
 	<td>
-		<label for="origin_street2">Street 2: </label>
+		<label for="origin_street">Street 1: </label>
 	</td>
 	<td>
-		<input type="text" name="origin_street2" id="origin_street2" size="25"
-			value="Camp Hill" />
+		<input type="text" name="origin_street" id="origin_street" size="25"
+			value="North Enola" />
 	</td>
 	<td>
-		<input type="text" name="destination_street2" id="destination_street2"
-			size="25" value="Camp Hill" />
+		<input type="text" name="destination_street" id="destination_street1"
+			size="25" value="Edgewater" />
+	</td>
+</tr>
+<tr>
+	<td>
+		<label for="origin_street_type">Street 2: </label>
+	</td>
+	<td>
+		<input type="text" name="origin_street_type" 
+			id="origin_street_type" size="25" value="Road" />
+	</td>
+	<td>
+		<input type="text" name="destination_street_type"
+			id="destination_street_type" size="25" value="Drive" />
 	</td>
 </tr>
 <tr>
@@ -114,11 +131,11 @@ else
 	</td>
 	<td>
 		<input type="text" name="origin_city" id="origin_city" size="25"
-			value="Camp Hill" />
+			value="Enola" />
 	</td>
 	<td>
 		<input type="text" name="destination_city" id="destination_city"
-			size="25" value="Camp Hill" />
+			size="25" value="Oakland" />
 	</td>
 </tr>
 <tr>
@@ -129,13 +146,13 @@ else
 		<input type="text" name="origin_state" id="origin_state" size="2"
 			maxlength="2" value="PA" /> , 
 		<input type="text" name="origin_zip_code" id="origin_zip_code" size="5"
-			maxlength="5" value="17011" />
+			maxlength="5" value="17025" />
 	</td>
 	<td>
 		<input type="text" name="destination_state" id="destination_state"
-			size="2" maxlength="2" value="PA" />
+			size="2" maxlength="2" value="CA" />
 		<input type="text" name="destination_zip_code" id="destination_zip_code"
-			size="5" maxlength="5" value="17011" />
+			size="5" maxlength="5" value="94621" />
 	</td>
 </tr>
 <tr>
