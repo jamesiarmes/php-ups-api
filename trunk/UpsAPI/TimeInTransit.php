@@ -40,25 +40,46 @@
  */
 class UpsAPI_TimeInTransit extends UpsAPI {
 	/**
-	 * Shipping address that we are to validate
+	 * Request data
 	 * 
 	 * @access protected
 	 * @param array
 	 */
-	protected $address;
+	protected $data;
+	
+	/**
+	 * Destination data
+	 * 
+	 * @access protected
+	 * @param array
+	 */
+	protected $destination;
+	
+	/**
+	 * Origin data
+	 * 
+	 * @access protected
+	 * @param array
+	 */
+	protected $origin;
 	
 	/**
 	 * Constructor for the Object
 	 * 
 	 * @access public
-	 * @param array $address array of address parts to validate
+	 * @param array $origin array of origin data
+	 * @param array $destination array of destination data
+	 * @param array $data array of request data
 	 */
-	public function __construct($address) {
+	public function __construct($origin, $destination, $data) {
 		parent::__construct();
 		
 		// set object properties
-		$this->server = $GLOBALS['ups_api']['server'].'/ups.app/xml/AV';
-		$this->address = $address;
+		$this->server      =
+			$GLOBALS['ups_api']['server'].'/ups.app/xml/TimeInTransit';
+		$this->origin      = $origin;
+		$this->destination = $destination;
+		$this->data        = $data;
 	} // end function __construct()
 	
 	/**
@@ -75,7 +96,7 @@ class UpsAPI_TimeInTransit extends UpsAPI {
 	{
 		/** create DOMDocument objects **/
 		$acces_dom = new DOMDocument('1.0');
-		$address_dom = new DOMDocument('1.0');
+		$transit_dom = new DOMDocument('1.0');
 		
 		
 		/** create the AccessRequest element **/
@@ -92,22 +113,24 @@ class UpsAPI_TimeInTransit extends UpsAPI {
 			new DOMElement('Password', $this->password));
 		
 		
-		/** create the AddressValidationRequest element **/
-		$address_element = $address_dom->appendChild(
-			new DOMElement('AddressValidationRequest'));
-		$address_element->setAttributeNode(new DOMAttr('xml:lang', 'en-US'));
-			
+		/** create the TimeInTransitRequest element **/
+		$transit_element = $transit_dom->appendChild(
+			new DOMElement('TimeInTransitRequest'));
+		$transit_element->setAttributeNode(new DOMAttr('xml:lang', 'en-US'));
+		
 		// create the child elements
-		$request_element = $address_element->appendChild(
+		$request_element = $transit_element->appendChild(
 			new DOMElement('Request'));
-		$address_element = $address_element->appendChild(
-			new DOMElement('Address'));
+		$transit_from_element = $transit_element->appendChild(
+			new DOMElement('TransitFrom'));
+		$transit_to_element = $transit_element->appendChild(
+			new DOMElement('TransitTo'));
 		
 		// create the children of the Request element
 		$transaction_element = $request_element->appendChild(
 			new DOMElement('TransactionReference'));
 		$request_element->appendChild(
-			new DOMElement('RequestAction', 'AV'));
+			new DOMElement('RequestAction', 'TimeInTransit'));
 		
 		// create the children of the TransactionReference element
 		$transaction_element->appendChild(
@@ -136,23 +159,159 @@ class UpsAPI_TimeInTransit extends UpsAPI {
 		} // end if we have customer data to include
 		
 		
-		/** create the children of the Address Element **/
+		/** create the children of the TransitFrom Element **/
 		// check if a city was entered
-		$create = (!empty($this->address['city']))
-			? $address_element->appendChild(new DOMElement(
-				'City', $this->address['city'])) : false;
-		$create = (!empty($this->address['state']))
-			? $address_element->appendChild(new DOMElement(
-				'StateProvinceCode', $this->address['state'])) : false;
-		$create = (!empty($this->address['zip_code'])) 
-			? $address_element->appendChild(new DOMElement(
-				'PostalCode', $this->address['zip_code'])) : false;
+		$from_address_element = $transit_from_element->appendChild(
+			new DOMElement('AddressArtifactFormat'));
+		$create = (!empty($this->origin['name']))
+			? $from_address_element->appendChild(new DOMElement(
+				'Consignee', $this->origin['name'])) : false;
+		$create = (!empty($this->origin['street_number']))
+			? $from_address_element->appendChild(new DOMElement(
+				'StreetNumberLow',
+					$this->origin['street_number'])) : false;
+		$create = (!empty($this->origin['street']))
+			? $from_address_element->appendChild(new DOMElement(
+				'StreetName', $this->origin['street'])) : false;
+		$create = (!empty($this->origin['street_type']))
+			? $from_address_element->appendChild(new DOMElement(
+				'StreetType',
+					$this->origin['street_type'])) : false;
+		$create = (!empty($this->origin['city']))
+			? $from_address_element->appendChild(new DOMElement(
+				'PoliticalDivision2',
+					$this->origin['city'])) : false;
+		$create = (!empty($this->origin['state']))
+			? $from_address_element->appendChild(new DOMElement(
+				'PoliticalDivision1',
+					$this->origin['state'])) : false;
+		$create = (!empty($this->origin['zip_code'])) 
+			? $from_address_element->appendChild(new DOMElement(
+				'PostcodePrimaryLow',
+					$this->origin['zip_code'])) : false;
+		$create = (!empty($this->origin['country'])) 
+			? $from_address_element->appendChild(new DOMElement(
+				'CountryCode',
+					$this->origin['country'])) : false;
 		unset($create);
+		
+		
+		/** create the children of the TransitTo Element **/
+		// check if a city was entered
+		$to_address_element = $transit_to_element->appendChild(
+			new DOMElement('AddressArtifactFormat'));
+		$create = (!empty($this->destinaiton['name']))
+			? $to_address_element->appendChild(new DOMElement(
+				'Consignee', $this->destinaiton['name'])) : false;
+		$create = (!empty($this->destinaiton['street_number']))
+			? $to_address_element->appendChild(new DOMElement(
+				'StreetNumberLow',
+					$this->destinaiton['street_number'])) : false;
+		$create = (!empty($this->destinaiton['street']))
+			? $to_address_element->appendChild(new DOMElement(
+				'StreetName', $this->destinaiton['street'])) : false;
+		$create = (!empty($this->destinaiton['street_type']))
+			? $to_address_element->appendChild(new DOMElement(
+				'StreetType',
+					$this->destinaiton['street_type'])) : false;
+		$create = (!empty($this->destinaiton['city']))
+			? $to_address_element->appendChild(new DOMElement(
+				'PoliticalDivision2',
+					$this->destinaiton['city'])) : false;
+		$create = (!empty($this->destinaiton['state']))
+			? $to_address_element->appendChild(new DOMElement(
+				'PoliticalDivision1',
+					$this->destinaiton['state'])) : false;
+		$create = (!empty($this->destinaiton['zip_code'])) 
+			? $to_address_element->appendChild(new DOMElement(
+				'PostcodePrimaryLow',
+					$this->destinaiton['zip_code'])) : false;
+		$create = (!empty($this->destinaiton['country'])) 
+			? $to_address_element->appendChild(new DOMElement(
+				'CountryCode',
+					$this->destinaiton['country'])) : false;
+		unset($create);
+		
+		
+		/** create the rest of the child elements **/
+		// create the PickupDate element
+		$transit_element->appendChild(
+			new DOMElement('PickupDate',
+				$this->data['pickup_date']));
+		
+		// create the MaximumListSize element if a value was passd in
+		if (!empty($this->data['max_list_size']))
+		{
+			$transit_element->appendChild(
+				new DOMElement('MaximumListSize',
+					$this->data['max_list_size']));
+		} // end if a maximum list size was set
+		
+		// create the InvoiceLineTotal element if a value was passed in
+		if (!empty($this->data['invoice']))
+		{
+			$invoice_element = $transit_element->appendChild(
+				new DOMElement('InvoiceLineTotal'));
+			
+			// check if a currency code was passed in
+			if (!empty($this->data['invoice']['currency_code']))
+			{
+				$invoice_element->appendChild(
+					new DOMElement('CurrencyCode',
+						$this->data['invoice']['currency_code']));
+			} // end if a currency code was passed in
+			
+			// check if a monetary value was passed in
+			if (!empty($this->data['invoice']['monetary_value']))
+			{
+				$invoice_element->appendChild(
+					new DOMElement('MonetaryValue',
+						$this->data['invoice']['monetary_value']));
+			} // end if a monetary value was passed in
+		} // end if invoice values were set
+		
+		// create the ShipmentWeight element if a value was passed in
+		if (!empty($this->data['weight']))
+		{
+			$weight_element = $transit_element->appendChild(
+				new DOMElement('InvoiceLineTotal'));
+			
+			// check if unit of measure data was passed in
+			if (!empty($this->data['weight']['unit_of_measure']))
+			{
+				$um_element = $weight_element->appendChild(
+					new DOMElement('UnitOfMeasurement'));
+			} // end if unit of measure was passed in
+
+			// check if a unit of measure code was passed in
+			if (!empty($this->data['weight']['unit_of_measure']['code']))
+			{
+				$um_element->appendChild(
+					new DOMElement('Code',
+						$this->data['weight']['unit_of_measure']['code']));
+			} // end if a unit of measure code was passed in
+			
+			// check if a monetary value was passed in
+			if (!empty($this->data['weight']['unit_of_measure']))
+			{
+				$um_element->appendChild(
+					new DOMElement('Description',
+						$this->data['weight']['unit_of_measure']['code']));
+			} // end if a monetary value was passed in
+			
+			// check if a monetary value was passed in
+			if (!empty($this->data['weight']['weight']))
+			{
+				$weight_element->appendChild(
+					new DOMElement('Weight',
+						$this->data['weight']['weight']));
+			} // end if a monetary value was passed in
+		} // end if invoice values were set
 		
 		
 		/** generate the XML **/
 		$access_xml = $acces_dom->saveXML();
-		$address_xml = $address_dom->saveXML();
+		$address_xml = $transit_dom->saveXML();
 		$return_value = $access_xml.$address_xml;
 		
 		return $return_value;
