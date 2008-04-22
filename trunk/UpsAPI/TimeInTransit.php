@@ -200,36 +200,36 @@ class UpsAPI_TimeInTransit extends UpsAPI {
 		// check if a city was entered
 		$to_address_element = $transit_to_element->appendChild(
 			new DOMElement('AddressArtifactFormat'));
-		$create = (!empty($this->destinaiton['name']))
+		$create = (!empty($this->destination['name']))
 			? $to_address_element->appendChild(new DOMElement(
-				'Consignee', $this->destinaiton['name'])) : false;
-		$create = (!empty($this->destinaiton['street_number']))
+				'Consignee', $this->destination['name'])) : false;
+		$create = (!empty($this->destination['street_number']))
 			? $to_address_element->appendChild(new DOMElement(
 				'StreetNumberLow',
-					$this->destinaiton['street_number'])) : false;
-		$create = (!empty($this->destinaiton['street']))
+					$this->destination['street_number'])) : false;
+		$create = (!empty($this->destination['street']))
 			? $to_address_element->appendChild(new DOMElement(
-				'StreetName', $this->destinaiton['street'])) : false;
-		$create = (!empty($this->destinaiton['street_type']))
+				'StreetName', $this->destination['street'])) : false;
+		$create = (!empty($this->destination['street_type']))
 			? $to_address_element->appendChild(new DOMElement(
 				'StreetType',
-					$this->destinaiton['street_type'])) : false;
-		$create = (!empty($this->destinaiton['city']))
+					$this->destination['street_type'])) : false;
+		$create = (!empty($this->destination['city']))
 			? $to_address_element->appendChild(new DOMElement(
 				'PoliticalDivision2',
-					$this->destinaiton['city'])) : false;
-		$create = (!empty($this->destinaiton['state']))
+					$this->destination['city'])) : false;
+		$create = (!empty($this->destination['state']))
 			? $to_address_element->appendChild(new DOMElement(
 				'PoliticalDivision1',
-					$this->destinaiton['state'])) : false;
-		$create = (!empty($this->destinaiton['zip_code'])) 
+					$this->destination['state'])) : false;
+		$create = (!empty($this->destination['zip_code'])) 
 			? $to_address_element->appendChild(new DOMElement(
 				'PostcodePrimaryLow',
-					$this->destinaiton['zip_code'])) : false;
-		$create = (!empty($this->destinaiton['country'])) 
+					$this->destination['zip_code'])) : false;
+		$create = (!empty($this->destination['country'])) 
 			? $to_address_element->appendChild(new DOMElement(
 				'CountryCode',
-					$this->destinaiton['country'])) : false;
+					$this->destination['country'])) : false;
 		unset($create);
 		
 		
@@ -274,7 +274,7 @@ class UpsAPI_TimeInTransit extends UpsAPI {
 		if (!empty($this->data['weight']))
 		{
 			$weight_element = $transit_element->appendChild(
-				new DOMElement('InvoiceLineTotal'));
+				new DOMElement('ShipmentWeight'));
 			
 			// check if unit of measure data was passed in
 			if (!empty($this->data['weight']['unit_of_measure']))
@@ -311,8 +311,8 @@ class UpsAPI_TimeInTransit extends UpsAPI {
 		
 		/** generate the XML **/
 		$access_xml = $acces_dom->saveXML();
-		$address_xml = $transit_dom->saveXML();
-		$return_value = $access_xml.$address_xml;
+		$transit_xml = $transit_dom->saveXML();
+		$return_value = $access_xml.$transit_xml;
 		
 		return $return_value;
 	} // end function buildRequest()
