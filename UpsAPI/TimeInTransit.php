@@ -318,57 +318,63 @@ class UpsAPI_TimeInTransit extends UpsAPI {
 	} // end function buildRequest()
 	
 	/**
-	 * Returns the type of match(s)
+	 * Returns the number of Services returned by UPS
 	 * 
 	 * @access public
-	 * @return string $return_value whether or not a full or partial match was
-	 * found
+	 * @return integer
 	 */
-	public function getMatchType()
+	public function getNumberOrServices() {
+		return count($this->response_array['TransitResponse']
+			['ServiceSummary']);
+	} // end function getNumberOrServices()
+	
+	/**
+	 * Returns the different services that match the request
+	 * 
+	 * @access public
+	 * @return array $return_value returned services
+	 */
+	public function getServices()
 	{
-		// check if we received any matched
-		if (!isset($this->response_array['AddressValidationResult']))
-		{
-			return 'None';
-		} // end if we received no matches
+		$services = $this->response_array['TransitResponse']
+			['ServiceSummary'];
+		$return_value = array();
 		
-		$match_array = $this->response_array['AddressValidationResult'];
-		switch ($match_array)
+		// check to make sure we have services
+		if (empty($services))
 		{
-			case isset($match_array['Quality'])
-				&& $match_array['Quality'] == '1.0':
-				
-				$return_value = 'Exact';
-				break;
-				
-			case isset($match_array['Quality']):
-				
-				$return_value = 'Partial';
-				break;
-			
-			case sizeof($match_array) > 1:
-				
-				// iterate over the results to see if we have an exact match
-				foreach ($match_array as $result)
-				{
-					if ($result['Quality'] == '1.0')
-					{
-						$return_value = 'Multiple With Exact';
-						break(2);
-					} // end if the match is an exact
-				} // end for each result
-				
-				$return_value = 'Multiple Partial';
-				break;
-			
-			default:
-				
-				$return_value = false;
-				break;
-		} // end switch ($match_array)
+			return $resturn_value;
+		} // end if no services were returned
+		
+		// iterate over each of the services
+		foreach ($services as $service)
+		{
+			$service_array = array(
+				'code' => $service['Service']['Code'],
+				'description' => $service['Service']
+					['Description'],
+			); // end $service
+			$estimated_arival = array(
+				'days' => $service['EstimatedArrival']
+					['BusinessTransitDays'],
+				'time' => $service['EstimatedArrival']['Time'],
+				'pickup' => $service['EstimatedArrival']
+					['PickupDate'],
+				'date' => $service['EstimatedArrival']['Date'],
+				'day' => $service['EstimatedArrival']
+					['DayOfWeek'],
+			); // end $estimated_arival
+			$return_value[] = array(
+				'service' => $service_array,
+				'guaranteed' => (strtolower(
+					$service['Guaranteed']['Code']) == 'y')
+					? 'yes' : 'no',
+				'estimated_arival' => $estimated_arival,
+			); // end $return_value
+		} // end for each service
 		
 		return $return_value;
-	} // end function getMatchType()
+	} // end function getServices()
 } // end class UpsAPI_TimeInTransit
 
 ?>
