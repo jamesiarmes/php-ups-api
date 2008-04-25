@@ -5,3 +5,5 @@
 *2008-02-09* - Package tracking has been moved to the point where a tracking number can be entered to receive either XML or and Array of data about the package.  A string or array of customer data can be passed into UpsAPI_Tracking::buildRequest().  The array must be formatted array('Element' => 'Value').
 
 *2008-03-09* - Shipping address validation has been marked as completed for the initial implementation.  See the AddressValidation page for examples.
+
+*2008-04-25* - Time in transit has been commited to the repository. See the TimeInTransit page for examples.

@@ -1,0 +1,85 @@
+#summary Examples of how to use time in transit with the PHP UPS API
+#labels Featured,Phase-Implementation,Time,Transit,Examples
+
+=Time In Transit Examples=
+
+*Time In Transit Example* - With Customer Name
+{{{
+$time_in_transit = new UpsAPI_Tracking($data_array);
+$xml = $time_in_transit->buildRequest('Customer Name');
+
+// returns an array
+$response = $time_in_transit->sendRequest($xml, false);
+}}}
+
+=== ===
+*Time In Transit Example* - With Customer Data Array
+{{{
+$customer_data = array(
+    'CustomerName' => 'Test Customer',
+    'Product' => 'Ebay Shipment Tracker 2.0',
+    'Location' => 'Camp Hill, PA',
+); // end $customer_data
+
+$time_in_transit = new UpsAPI_Tracking($data_array);
+$xml = $time_in_transit->buildRequest($customer_data);
+
+// returns XML
+$response = $time_in_transit->sendRequest($xml, true);
+}}}
+
+=== ===
+*getNumberOrServices()* - To get the number of packages:
+{{{
+$time_in_transit = new UpsAPI_Tracking($data_array);
+$xml = $time_in_transit->buildRequest($customer_data);
+
+$time_in_transit->sendRequest($xml, true);
+$services_count = $time_in_transit->getNumberOrServices();
+}}}
+Returns an integer:
+{{{
+7
+}}}
+
+=== ===
+*getservices()* - To get the status of each package:
+{{{
+$time_in_transit = new UpsAPI_Tracking($data_array);
+$xml = $time_in_transit->buildRequest($customer_data);
+
+$time_in_transit->sendRequest($xml, true);
+$services_array = $time_in_transit->getservices();
+}}}
+Returns an array:
+{{{
+array
+  0 => 
+    array
+      'service' => 
+        array
+          'code' => '1DM'
+          'description' => 'UPS Next Day Air Early A.M.'
+      'guaranteed' => 'yes'
+      'estimated_arival' => 
+        array
+          'days' => '1'
+          'time' => '08:00:00'
+          'pickup' => '2008-04-21'
+          'date' => '2008-04-22'
+          'day' => 'TUE'
+  1 => 
+    array
+      'service' => 
+        array
+          'code' => '1DA'
+          'description' => 'UPS Next Day Air'
+      'guaranteed' => 'yes'
+      'estimated_arival' => 
+        array
+          'days' => '1'
+          'time' => '10:30:00'
+          'pickup' => '2008-04-21'
+          'date' => '2008-04-22'
+          'day' => 'TUE'
+}}}
