@@ -16,7 +16,6 @@ error_reporting(E_ALL);
 
 
 /** set the pear include path **/
-// TODO: Remove dependancy on PEAR
 $include_path = ini_get('include_path').':'.BASE_PATH.'/inc/pear';
 
 // check if this is a windows server 
