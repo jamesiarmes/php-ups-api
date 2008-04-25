@@ -45,23 +45,28 @@ if (!empty($_POST['submit']))
 		), // end weight
 	); // end $data
 	
-	$validation = new UpsAPI_TimeInTransit($origin, $destination, $data);
-	$xml = $validation->buildRequest();
+	$time_in_transit = new UpsAPI_TimeInTransit($origin, $destination,
+		$data);
+	$xml = $time_in_transit->buildRequest();
 	
 	// check the output type
 	if ($_POST['output'] == 'array')
 	{
-		$response = $validation->sendRequest($xml, false);
+		$response = $time_in_transit->sendRequest($xml, false);
 		echo 'Response Output:<br />';
 		var_dump($response);
 	} // end if the output type is an array
 	else
 	{
-		$response = $validation->sendRequest($xml, true);
+		$response = $time_in_transit->sendRequest($xml, true);
 		echo 'Response Output:<br />';
 		echo '<pre>'.htmlentities($response).'</pre>';
 	} // end else the output type is XML
 	
+	echo 'UpsAPI_TimeInTransit::getservices() Output:<br />';
+	var_dump($time_in_transit->getServices());
+	echo 'UpsAPI_TimeInTransit::getNumberOrServices() Output:<br />';
+	var_dump($time_in_transit->getNumberOrServices());
 } // end if the form has been submitted
 else
 {
@@ -82,8 +87,8 @@ else
 			value="Joe Schmoe" />
 	</td>
 	<td>
-		<input type="text" name="destination_name" id="destination_name"
-			size="25" value="Jane Doe" />
+		<input type="text" name="destination_name"
+			id="destination_name" size="25" value="Jane Doe" />
 	</td>
 </tr>
 <tr>
@@ -91,12 +96,12 @@ else
 		<label for="origin_street_number">Street Number: </label>
 	</td>
 	<td>
-		<input type="text" name="origin_street_number" id="origin_street_number" size="25"
-			value="463" />
+		<input type="text" name="origin_street_number"
+			id="origin_street_number" size="25" value="463" />
 	</td>
 	<td>
-		<input type="text" name="destination_street_number" id="destination_street_number"
-			size="25" value="8400" />
+		<input type="text" name="destination_street_number"
+			id="destination_street_number" size="25" value="8400" />
 	</td>
 </tr>
 <tr>
@@ -104,12 +109,12 @@ else
 		<label for="origin_street">Street 1: </label>
 	</td>
 	<td>
-		<input type="text" name="origin_street" id="origin_street" size="25"
-			value="North Enola" />
+		<input type="text" name="origin_street" id="origin_street"
+			size="25" value="North Enola" />
 	</td>
 	<td>
-		<input type="text" name="destination_street" id="destination_street1"
-			size="25" value="Edgewater" />
+		<input type="text" name="destination_street"
+			id="destination_street1" size="25" value="Edgewater" />
 	</td>
 </tr>
 <tr>
@@ -143,16 +148,18 @@ else
 		<label for="origin_state">State/Zip Code: </label>
 	</td>
 	<td>
-		<input type="text" name="origin_state" id="origin_state" size="2"
-			maxlength="2" value="PA" /> , 
-		<input type="text" name="origin_zip_code" id="origin_zip_code" size="5"
-			maxlength="5" value="17025" />
+		<input type="text" name="origin_state" id="origin_state"
+			size="2" maxlength="2" value="PA" /> , 
+		<input type="text" name="origin_zip_code" id="origin_zip_code"
+			size="5" maxlength="5" value="17025" />
 	</td>
 	<td>
-		<input type="text" name="destination_state" id="destination_state"
-			size="2" maxlength="2" value="CA" />
-		<input type="text" name="destination_zip_code" id="destination_zip_code"
-			size="5" maxlength="5" value="94621" />
+		<input type="text" name="destination_state"
+			id="destination_state" size="2" maxlength="2"
+			value="CA" />
+		<input type="text" name="destination_zip_code"
+			id="destination_zip_code" size="5" maxlength="5"
+			value="94621" />
 	</td>
 </tr>
 <tr>
@@ -160,12 +167,13 @@ else
 		<label for="origin_country">Country: </label>
 	</td>
 	<td>
-		<input type="text" name="origin_country" id="origin_country" size="2"
-			maxlength="2" value="US" />
+		<input type="text" name="origin_country" id="origin_country"
+			size="2" maxlength="2" value="US" />
 	</td>
 	<td>
-		<input type="text" name="destination_country" id="destination_country"
-			size="2" maxlength="2" value="US" />
+		<input type="text" name="destination_country"
+			id="destination_country" size="2" maxlength="2"
+			value="US" />
 	</td>
 </tr>
 <tr>
@@ -182,8 +190,8 @@ else
 		<label for="max_list_size">Maximum List Size (1-50): </label>
 	</td>
 	<td colspan="2">
-		<input type="text" name="max_list_size" id="max_list_size" size="2"
-			maxlength="2" value="35" />
+		<input type="text" name="max_list_size" id="max_list_size"
+			size="2" maxlength="2" value="35" />
 	</td>
 </tr>
 <tr>
@@ -191,12 +199,12 @@ else
 		<label for="currency_code">Currency/Amount: </label>
 	</td>
 	<td>
-		<input type="text" name="currency_code" id="currency_code" size="3"
-			maxlength="3" value="USD" />
+		<input type="text" name="currency_code" id="currency_code"
+			size="3" maxlength="3" value="USD" />
 	</td>
 	<td>
-		<input type="text" name="monetary_value" id="monetary_value" size="11"
-			maxlength="11" value="500.00" />
+		<input type="text" name="monetary_value" id="monetary_value"
+			size="11" maxlength="11" value="500.00" />
 	</td>
 </tr>
 <tr>
@@ -208,8 +216,8 @@ else
 			maxlength="3" value="LBS" />
 	</td>
 	<td>
-		<input type="text" name="weight_desc" id="weight_desc" size="25"
-			maxlength="255" value="Pounds" />
+		<input type="text" name="weight_desc" id="weight_desc"
+			size="25" maxlength="255" value="Pounds" />
 	</td>
 </tr>
 <tr>
