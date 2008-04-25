@@ -127,9 +127,6 @@ abstract class UpsAPI {
 	 * buildRequest() method
 	 * @params boool $return_raw_xml whether or not to return the raw XML from
 	 * the request
-	 *
-	 * @todo Add functionality to parse Response XML
-	 * @todo Remove dependancy on PEAR::XML_Serializer
 	 */
 	public function sendRequest($request_xml, $return_raw_xml = false) {
 		require_once 'XML/Unserializer.php';
