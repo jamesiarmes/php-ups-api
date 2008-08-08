@@ -146,7 +146,7 @@ class UpsAPI_Tracking extends UpsAPI {
 				new DOMElement('ReferenceNumber'));
 			$reference_number = $reference_number->appendChild(
 				new DOMElement('Value',
-					$this->inquiry_array['inquiry_number']));
+					$this->inquiry_array['reference_number']));
 			$track_element->appendChild(
 				new DOMElement('ShipperNumber',
 					$this->inquiry_array['shipper_number']));
