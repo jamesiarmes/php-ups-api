@@ -39,10 +39,18 @@
  */
 class UpsAPI_Tracking extends UpsAPI {
 	/**
+	 * Array of inquiry data
+	 * 
+	 * @access protected
+	 * @var array
+	 */
+	protected $inquiry_array;
+	
+	/**
 	 * Tracking number that we are requesting data about
 	 * 
 	 * @access protected
-	 * @param string
+	 * @var string
 	 */
 	protected $tracking_number;
 	
@@ -51,13 +59,15 @@ class UpsAPI_Tracking extends UpsAPI {
 	 * 
 	 * @access public
 	 * @param string $tracking_number number of the pacaage(s) we are tracking
+	 * @param array $inquiry array of inquiry data
 	 */
-	public function __construct($tracking_number) {
+	public function __construct($tracking_number = null, $inquiry = array()) {
 		parent::__construct();
 		
 		// set object properties
 		$this->server = $GLOBALS['ups_api']['server'].'/ups.app/xml/Track';
 		$this->tracking_number = $tracking_number;
+		$this->inquiry_array = $inquiry;
 	} // end function __construct()
 	
 	/**
@@ -76,13 +86,12 @@ class UpsAPI_Tracking extends UpsAPI {
 	 * 
 	 * @access public
 	 * @param string $value numeric tracking number
-	 * @return bool whether or not a new value was set
 	 */
 	public function setTrackingNumber($value)
 	{
 		$this->tracking_number = $value;
 			
-		return false;
+		return true;
 	} // sets a new tracking number
 	
 	/**
@@ -124,8 +133,24 @@ class UpsAPI_Tracking extends UpsAPI {
 		// create the child elements
 		$request_element = $track_element->appendChild(
 			new DOMElement('Request'));
-		$track_element->appendChild(
-			new DOMElement('TrackingNumber', $this->tracking_number));
+		if (!empty($this->tracking_number))
+		{
+			$track_element->appendChild(
+				new DOMElement('TrackingNumber', $this->tracking_number));
+		} // end if we have a tracking number
+		
+		// check to see if we have inquiry data
+		if (!empty($this->inquiry_array))
+		{
+			$reference_number = $track_element->appendChild(
+				new DOMElement('ReferenceNumber'));
+			$reference_number = $reference_number->appendChild(
+				new DOMElement('Value',
+					$this->inquiry_array['inquiry_number']));
+			$track_element->appendChild(
+				new DOMElement('ShipperNumber',
+					$this->inquiry_array['shipper_number']));
+		} // end if we have inquiry data
 		
 		// create the children of the Request element
 		$transaction_element = $request_element->appendChild(
@@ -165,6 +190,7 @@ class UpsAPI_Tracking extends UpsAPI {
 		/** generate the XML **/
 		$access_xml = $acces_dom->saveXML();
 		$track_xml = $track_dom->saveXML();
+		var_dump($track_xml);
 		$return_value = $access_xml.$track_xml;
 		
 		return $return_value;
