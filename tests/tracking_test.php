@@ -10,8 +10,20 @@ echo '<img src="ups_logo.gif" /><br />';
 if (!empty($_POST['submit']))
 {
 	$tracking_number = $_POST['tracking_number'];
+	$inquiry_number  = $_POST['inquiry_number'];
+	$shipper_number  = $_POST['shipper_number'];
 	
-	$tracking = new UpsAPI_Tracking($tracking_number);
+	// check to see if we have inquiry data
+	$inquiry = array();
+	if (!empty($inquiry_number) && !empty($shipper_number))
+	{
+		$inquiry = array(
+			'inquiry_number' => $inquiry_number,
+			'shipper_number' => $shipper_number,
+		); // end $inquiry
+	} // end if we have inquiry data
+	
+	$tracking = new UpsAPI_Tracking($tracking_number, $inquiry);
 	$xml = $tracking->buildRequest();
 	
 	// check the output type
@@ -42,7 +54,11 @@ else
 ?>
 <form method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>">
 	<input type="text" name="tracking_number" id="tracking_number" size="25"
-		value="1Z12345E0291980793" />
+		value="1Z12345E0291980793" /><br />
+	<label for="inquiry_number">Inquiry Number</label>
+	<input type="text" name="inquiry_number" id="inquiry_number" size="25" />
+	<label for="shipper_number">Sender Shipper Number</label>
+	<input type="text" name="shipper_number" id="shipper_number" size="25" />
 	<select name="output" id="output">
 		<option value="array">Array</option>
 		<option value="xml">XML</option>
