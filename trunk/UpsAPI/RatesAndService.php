@@ -65,12 +65,14 @@ class UpsAPI_RatesAndService extends UpsAPI {
 		// create the new dom document
 		$xml = new DOMDocument('1.0', 'utf-8');
 		/** create the AddressValidationRequest element **/
-		$rate_element = $xml->appendChild(
+		$rate = $xml->appendChild(
 			new DOMElement('RatingServiceSelectionRequest'));
-		$rate_element->setAttributeNode(new DOMAttr('xml:lang', 'en-US'));
+		$rate->setAttributeNode(new DOMAttr('xml:lang', 'en-US'));
 		
-		$requst_element = $this->buildRequest_RequestElement($rate_element,
+		// create the child elements
+		$requst = $this->buildRequest_RequestElement($rate_element,
 			'Rate', 'Rate', $customer_context);
+		$shipment = $rate->appendChild(new DOMElement('Shipment'));
 		$return_value =
 			'<?xml version="1.0"?>
 <RatingServiceSelectionRequest xml:lang="en-US">
