@@ -118,7 +118,23 @@ abstract class UpsAPI {
 	 * @param array|string $cutomer_context customer data
 	 * @return string $return_value request XML
 	 */
-	abstract public function buildRequest($customer_context = null);
+	public function buildRequest($customer_context = null) {
+		// create the access request element
+		$access_dom = new DOMDocument('1.0');
+		$access_element = $access_dom->appendChild(
+			new DOMElement('AccessRequest'));
+		$access_element->setAttributeNode(new DOMAttr('xml:lang', 'en-US'));
+		
+		// create the child elements
+		$access_element->appendChild(
+			new DOMElement('AccessLicenseNumber', $this->access_key));
+		$access_element->appendChild(
+			new DOMElement('UserId', $this->username));
+		$access_element->appendChild(
+			new DOMElement('Password', $this->password));
+		
+		return $access_dom->saveXML();
+	}
 	
 	/**
 	 * Send a request to the UPS Server using xmlrpc

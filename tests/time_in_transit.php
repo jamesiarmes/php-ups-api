@@ -181,8 +181,11 @@ else
 		<label for="pickup_date">Pickup Date: </label>
 	</td>
 	<td colspan="2">
+<?php
+	$pickup_date = date('Y').date('m').date('d');
+?>
 		<input type="text" name="pickup_date" id="pickup_date" size="8"
-			maxlength="8" value="20080421" />
+			maxlength="8" value="<?php echo $pickup_date; ?>" />
 	</td>
 </tr>
 <tr>
