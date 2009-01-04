@@ -170,6 +170,62 @@ abstract class UpsAPI {
 		// return the response as an array
 		return $this->response_array;
 	} // end function sendRequest()
+	
+	/**
+	 * Builds the Request element
+	 * 
+	 * @param DOMElement $dom_element
+	 * @param string $action
+	 * @param string $option
+	 * @param string|array $customer_context
+	 * @return DOMElement
+	 */
+	protected function buildRequest_RequestElement(&$dom_element, $action,
+		$option = null, $customer_context = null) {
+		// create the child element
+		$request = $dom_element->appendChild(
+			new DOMElement('Request'));
+		
+		// create the children of the Request element
+		$transaction_element = $request->appendChild(
+			new DOMElement('TransactionReference'));
+		$request->appendChild(
+			new DOMElement('RequestAction', $action));
+		
+		// check to see if an option was passed in
+		if (!empty($option)) {
+			$request->appendChild(
+				new DOMElement('RequestOption', $option));
+		} // end if an option was passed in
+		
+		// create the children of the TransactionReference element
+		$transaction_element->appendChild(
+			new DOMElement('XpciVersion', '1.0001'));
+		
+		// check if we have customer data to include
+		if (!empty($customer_context))
+		{
+			if (is_array($customer_context))
+			{
+				$customer_element = $transaction_element->appendChild(
+					new DOMElement('CustomerContext'));
+
+				// iterate over the array of customer data
+				foreach ($customer_context as $element => $value)
+				{
+					$customer_element->appendChild(
+						new DOMElement($element, $value));
+				} // end for each customer data
+			} // end if the customer data is an array
+			else
+			{
+				$transaction_element->appendChild(
+					new DOMElement('CustomerContext', $customer_context));
+			} // end if the customer data is a string
+		} // end if we have customer data to include
+		
+		return $request;
+	} // end function buildRequest_RequestElement()
 } // end class UpsAPI
 
 ?>

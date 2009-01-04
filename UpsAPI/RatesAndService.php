@@ -69,6 +69,8 @@ class UpsAPI_RatesAndService extends UpsAPI {
 			new DOMElement('RatingServiceSelectionRequest'));
 		$rate_element->setAttributeNode(new DOMAttr('xml:lang', 'en-US'));
 		
+		$requst_element = $this->buildRequest_RequestElement($rate_element,
+			'Rate', 'Rate', $customer_context);
 		$return_value =
 			'<?xml version="1.0"?>
 <RatingServiceSelectionRequest xml:lang="en-US">

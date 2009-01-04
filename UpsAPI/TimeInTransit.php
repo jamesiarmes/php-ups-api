@@ -104,44 +104,12 @@ class UpsAPI_TimeInTransit extends UpsAPI {
 		$transit_element->setAttributeNode(new DOMAttr('xml:lang', 'en-US'));
 		
 		// create the child elements
-		$request_element = $transit_element->appendChild(
-			new DOMElement('Request'));
+		$request_element = $this->buildRequest_RequestElement(
+			$transit_element, 'TimeInTransit', null, $customer_context);
 		$transit_from_element = $transit_element->appendChild(
 			new DOMElement('TransitFrom'));
 		$transit_to_element = $transit_element->appendChild(
 			new DOMElement('TransitTo'));
-		
-		// create the children of the Request element
-		$transaction_element = $request_element->appendChild(
-			new DOMElement('TransactionReference'));
-		$request_element->appendChild(
-			new DOMElement('RequestAction', 'TimeInTransit'));
-		
-		// create the children of the TransactionReference element
-		$transaction_element->appendChild(
-			new DOMElement('XpciVersion', '1.0001'));
-		
-		// check if we have customer data to include
-		if (!empty($customer_context))
-		{
-			if (is_array($customer_context))
-			{
-				$customer_element = $transaction_element->appendChild(
-					new DOMElement('CustomerContext'));
-
-				// iterate over the array of customer data
-				foreach ($customer_context as $element => $value)
-				{
-					$customer_element->appendChild(
-						new DOMElement($element, $value));
-				} // end for each customer data
-			} // end if the customer data is an array
-			else
-			{
-				$transaction_element->appendChild(
-					new DOMElement('CustomerContext', $customer_context));
-			} // end if the customer data is a string
-		} // end if we have customer data to include
 		
 		
 		/** create the children of the TransitFrom Element **/
