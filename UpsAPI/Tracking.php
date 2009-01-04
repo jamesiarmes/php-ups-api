@@ -107,11 +107,11 @@ class UpsAPI_Tracking extends UpsAPI {
 	public function buildRequest($customer_context = null)
 	{
 		/** create DOMDocument objects **/
-		$track_dom = new DOMDocument('1.0');
+		$xml = new DOMDocument('1.0');
 		
 		
 		/** create the TrackRequest element **/
-		$track_element = $track_dom->appendChild(
+		$track_element = $xml->appendChild(
 			new DOMElement('TrackRequest'));
 		$track_element->setAttributeNode(new DOMAttr('xml:lang', 'en-US'));
 			
@@ -127,17 +127,10 @@ class UpsAPI_Tracking extends UpsAPI {
 		// check to see if we have inquiry data
 		if (!empty($this->inquiry_array))
 		{
-			$reference_number = $track_element->appendChild(
-				new DOMElement('ReferenceNumber'));
-			$reference_number = $reference_number->appendChild(
-				new DOMElement('Value',
-					$this->inquiry_array['reference_number']));
-			$track_element->appendChild(
-				new DOMElement('ShipperNumber',
-					$this->inquiry_array['shipper_number']));
+			$reference_numer = $this->buildRequest_Inquiry($track_element);
 		} // end if we have inquiry data
 		
-		return parent::buildRequest().$track_dom->saveXML();
+		return parent::buildRequest().$xml->saveXML();
 	} // end function buildRequest()
 	
 	/**
@@ -241,8 +234,7 @@ class UpsAPI_Tracking extends UpsAPI {
 	 * @return array $return_value array of information about the shipping
 	 * method
 	 */
-	public function getShippingMethod()
-	{
+	public function getShippingMethod() {
 		$service = $this->response_array['Shipment']['Service'];
 		
 		// create the array of shipping information
@@ -253,6 +245,26 @@ class UpsAPI_Tracking extends UpsAPI {
 		
 		return $return_value;
 	} // end function getShippingMenthod()
+	
+	/**
+	 * Builds the element required for an inquery
+	 * 
+	 * @param DOMElement $dom_element
+	 * @return DOMElement
+	 */
+	protected function buildRequest_Inquiry(&$dom_element) {
+		// build the element
+		$reference_number = $dom_element->appendChild(
+			new DOMElement('ReferenceNumber'));
+		$reference_number->appendChild(
+			new DOMElement('Value',
+				$this->inquiry_array['reference_number']));
+		$dom_element->appendChild(
+			new DOMElement('ShipperNumber',
+				$this->inquiry_array['shipper_number']));
+		
+		return $reference_number;
+	} // end function buildRequest_Inquiry()
 } // end class UpsAPI_Tracking
 
 ?>

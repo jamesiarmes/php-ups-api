@@ -162,8 +162,7 @@ abstract class UpsAPI {
 		$this->response_array = $unserializer->unserialize($response);
 		
 		// check if we should return the raw XML data
-		if ($return_raw_xml)
-		{
+		if ($return_raw_xml) {
 			return $response;
 		} // end if we should return the raw XML
 		
@@ -203,10 +202,9 @@ abstract class UpsAPI {
 			new DOMElement('XpciVersion', '1.0001'));
 		
 		// check if we have customer data to include
-		if (!empty($customer_context))
-		{
-			if (is_array($customer_context))
-			{
+		if (!empty($customer_context)) {
+			// check to see if the customer context is an array
+			if (is_array($customer_context)) {
 				$customer_element = $transaction_element->appendChild(
 					new DOMElement('CustomerContext'));
 
@@ -217,8 +215,7 @@ abstract class UpsAPI {
 						new DOMElement($element, $value));
 				} // end for each customer data
 			} // end if the customer data is an array
-			else
-			{
+			else {
 				$transaction_element->appendChild(
 					new DOMElement('CustomerContext', $customer_context));
 			} // end if the customer data is a string
