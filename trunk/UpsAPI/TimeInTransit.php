@@ -95,22 +95,7 @@ class UpsAPI_TimeInTransit extends UpsAPI {
 	public function buildRequest($customer_context = null)
 	{
 		/** create DOMDocument objects **/
-		$acces_dom = new DOMDocument('1.0');
 		$transit_dom = new DOMDocument('1.0');
-		
-		
-		/** create the AccessRequest element **/
-		$access_element = $acces_dom->appendChild(
-			new DOMElement('AccessRequest'));
-		$access_element->setAttributeNode(new DOMAttr('xml:lang', 'en-US'));
-		
-		// creat the child elements
-		$access_element->appendChild(
-			new DOMElement('AccessLicenseNumber', $this->access_key));
-		$access_element->appendChild(
-			new DOMElement('UserId', $this->username));
-		$access_element->appendChild(
-			new DOMElement('Password', $this->password));
 		
 		
 		/** create the TimeInTransitRequest element **/
@@ -308,13 +293,7 @@ class UpsAPI_TimeInTransit extends UpsAPI {
 			} // end if a monetary value was passed in
 		} // end if invoice values were set
 		
-		
-		/** generate the XML **/
-		$access_xml = $acces_dom->saveXML();
-		$transit_xml = $transit_dom->saveXML();
-		$return_value = $access_xml.$transit_xml;
-		
-		return $return_value;
+		return parent::buildRequest().$transit_dom->saveXML();
 	} // end function buildRequest()
 	
 	/**

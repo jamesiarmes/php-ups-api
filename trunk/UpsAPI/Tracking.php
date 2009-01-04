@@ -107,22 +107,7 @@ class UpsAPI_Tracking extends UpsAPI {
 	public function buildRequest($customer_context = null)
 	{
 		/** create DOMDocument objects **/
-		$acces_dom = new DOMDocument('1.0');
 		$track_dom = new DOMDocument('1.0');
-		
-		
-		/** create the AccessRequest element **/
-		$access_element = $acces_dom->appendChild(
-			new DOMElement('AccessRequest'));
-		$access_element->setAttributeNode(new DOMAttr('xml:lang', 'en-US'));
-		
-		// creat the child elements
-		$access_element->appendChild(
-			new DOMElement('AccessLicenseNumber', $this->access_key));
-		$access_element->appendChild(
-			new DOMElement('UserId', $this->username));
-		$access_element->appendChild(
-			new DOMElement('Password', $this->password));
 		
 		
 		/** create the TrackRequest element **/
@@ -187,13 +172,7 @@ class UpsAPI_Tracking extends UpsAPI {
 		} // end if we have customer data to include
 		
 		
-		/** generate the XML **/
-		$access_xml = $acces_dom->saveXML();
-		$track_xml = $track_dom->saveXML();
-		var_dump($track_xml);
-		$return_value = $access_xml.$track_xml;
-		
-		return $return_value;
+		return parent::buildRequest().$track_dom->saveXML();
 	} // end function buildRequest()
 	
 	/**
