@@ -47,50 +47,74 @@ abstract class UpsAPI {
 	/**
 	 * Access key provided by UPS
 	 * 
-	 * @param string
 	 * @access protected
+	 * @param string
 	 */
 	protected $access_key;
 	
 	/**
 	 * Developer key provided by UPS
 	 * 
-	 * @param string
 	 * @access protected
+	 * @param string
 	 */
 	protected $developer_key;
 	
 	/**
 	 * Password used to access UPS Systems
 	 * 
-	 * @param string
 	 * @access protected
+	 * @param string
 	 */
 	protected $password;
 	
 	/**
+	 * Response from the server as XML
+	 * 
+	 * @access protected
+	 * @var DOMDocument
+	 */
+	protected $response;
+	
+	/**
 	 * Response from the server as an array
 	 * 
-	 * @var array
 	 * @access protected
+	 * @var array
 	 */
 	protected $response_array;
 	
 	/**
+	 * Root Node for the repsonse XML
+	 * 
+	 * @access protected
+	 * @var DOMNode
+	 */
+	protected $root_node;
+	
+	/**
 	 * UPS Server to send Request to
 	 * 
-	 * @param string
 	 * @access protected
+	 * @param string
 	 */
 	protected $server;
 	
 	/**
 	 * Username used to access UPS Systems
 	 * 
-	 * @param string
 	 * @access protected
+	 * @param string
 	 */
 	protected $username;
+	
+	/**
+	 * xpath object for the response XML
+	 * 
+	 * @access protected
+	 * @var DOMXPath
+	 */
+	protected $xpath;
 	
 	/**
 	 * Sets up the API Object
@@ -139,6 +163,7 @@ abstract class UpsAPI {
 	/**
 	 * Send a request to the UPS Server using xmlrpc
 	 * 
+	 * @access public
 	 * @params string $request_xml XML request from the child objects
 	 * buildRequest() method
 	 * @params boool $return_raw_xml whether or not to return the raw XML from
@@ -161,6 +186,13 @@ abstract class UpsAPI {
 		$unserializer = new XML_Unserializer(array('returnResult' => true));
 		$this->response_array = $unserializer->unserialize($response);
 		
+		// build the dom objects
+		$this->response = new DOMDocument();
+		$this->response->loadXML($response);
+		$this->xpath = new DOMXPath($this->response);
+		$this->root_node = $this->xpath->query(
+			'/'.$this->getRootNodeName())->item(0);
+		
 		// check if we should return the raw XML data
 		if ($return_raw_xml) {
 			return $response;
@@ -173,6 +205,7 @@ abstract class UpsAPI {
 	/**
 	 * Builds the Request element
 	 * 
+	 * @access protected
 	 * @param DOMElement $dom_element
 	 * @param string $action
 	 * @param string $option
@@ -209,8 +242,7 @@ abstract class UpsAPI {
 					new DOMElement('CustomerContext'));
 
 				// iterate over the array of customer data
-				foreach ($customer_context as $element => $value)
-				{
+				foreach ($customer_context as $element => $value) {
 					$customer_element->appendChild(
 						new DOMElement($element, $value));
 				} // end for each customer data
@@ -223,6 +255,14 @@ abstract class UpsAPI {
 		
 		return $request;
 	} // end function buildRequest_RequestElement()
+	
+	/**
+	 * Returns the name of the servies response root node
+	 * 
+	 * @access protected
+	 * @return string
+	 * 
+	 * @todo remove after phps self scope has been fixed
+	 */
+	protected abstract function getRootNodeName();
 } // end class UpsAPI
-
-?>

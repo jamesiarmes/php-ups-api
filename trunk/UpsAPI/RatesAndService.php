@@ -39,6 +39,66 @@
  */
 class UpsAPI_RatesAndService extends UpsAPI {
 	/**
+	 * Node name for the Monetary Value
+	 * 
+	 * @var string
+	 */
+	const NODE_NAME_MONETARY_VALUE = 'MonetaryValue';
+	
+	/**
+	 * Node name for the Rated Shipment Node
+	 * 
+	 * @var string
+	 */
+	const NODE_NAME_RATED_SHIPMENT = 'RatedShipment';
+	
+	/**
+	 * Node name for the root node
+	 * 
+	 * @var string
+	 */
+	const NODE_NAME_ROOT_NODE = 'RatingServiceSelectionResponse';
+	
+	/**
+	 * Destination (ship to) data
+	 * 
+	 * Should be in the format:
+	 * $destination = array(
+	 * 	'name' => '',
+	 * 	'attn' => '',
+	 * 	'phone' => '1234567890',
+	 * 	'address' => array(
+	 * 		'street1' => '',
+	 * 		'street2' => '',
+	 * 		'city' => '',
+	 * 		'state' => '**',
+	 * 		'zip' => 12345,
+	 * 		'country' => '',
+	 * 	),
+	 * );
+	 * 
+	 * @access protected
+	 * @var array
+	 */
+	protected $destination = array();
+	
+	/**
+	 * Shipment data
+	 * 
+	 * @access protected
+	 * @var array
+	 */
+	protected $shipment = array();
+	
+	/**
+	 * Shipper data
+	 * 
+	 * @access protected
+	 * @var array
+	 */
+	protected $shipper = array();
+	
+	/**
 	 * Constructor for the Object
 	 * 
 	 * @access public
@@ -49,6 +109,82 @@ class UpsAPI_RatesAndService extends UpsAPI {
 		// set object properties
 		$this->server = $GLOBALS['ups_api']['server'].'/ups.app/xml/Rate';
 	} // end function __construct()
+	
+	/**
+	 * Returns charges for each package
+	 * 
+	 * @return array
+	 */
+	public function getPackageCharges() {
+		$return_value = array();
+		
+		// iterate over the packages
+		$packages = $this->xpath->query(self::NODE_NAME_RATED_SHIPMENT.
+			'//RatedPackage', $this->root_node);
+		foreach ($packages as $package) {
+			$return_value[] = array(
+				'currency_code' => $this->xpath->query(
+					'TotalCharges/CurrencyCode',
+					$package)->item(0)->nodeValue,
+				'transportation' => $this->xpath->query(
+					'TransportationCharges/'.self::NODE_NAME_MONETARY_VALUE,
+					$package)->item(0)->nodeValue,
+				'service_options' => $this->xpath->query(
+					'ServiceOptionsCharges/'.self::NODE_NAME_MONETARY_VALUE,
+					$package)->item(0)->nodeValue,
+				'total' => $this->xpath->query(
+					'TotalCharges/'.self::NODE_NAME_MONETARY_VALUE,
+					$package)->item(0)->nodeValue,
+			); // end $return_value
+		} // end for each package
+		
+		return $return_value;
+	} // end function getPackageCharges()
+	
+	/**
+	 * Returns charges for the entire shipment
+	 * 
+	 * @return array
+	 */
+	public function getShipmentCharges() {
+		$rated_shipment = $this->xpath->query(
+			'//'.self::NODE_NAME_RATED_SHIPMENT, $this->root_node)->item(0);
+		
+		$return_value[] = array(
+			'currency_code' => $this->xpath->query(
+				'//TotalCharges/CurrencyCode',
+				$rated_shipment)->item(0)->nodeValue,
+			'transportation' => $this->xpath->query(
+				'//TransportationCharges/'.self::NODE_NAME_MONETARY_VALUE,
+				$rated_shipment)->item(0)->nodeValue,
+			'service_options' => $this->xpath->query(
+				'//ServiceOptionsCharges/'.self::NODE_NAME_MONETARY_VALUE,
+				$rated_shipment)->item(0)->nodeValue,
+			'total' => $this->xpath->query(
+				'//TotalCharges/'.self::NODE_NAME_MONETARY_VALUE,
+				$rated_shipment)->item(0)->nodeValue,
+		); // end $return_value
+		
+		return $return_value;
+	} // end function
+	
+	/**
+	 * Returns any warnings from the response
+	 * 
+	 * @return array
+	 */
+	public function getWarnings() {
+		$warnings = $this->xpath->query('//'.self::NODE_NAME_RATED_SHIPMENT.
+			'/RatedShipmentWarning', $this->root_node);
+		
+		// iterate over the warnings
+		$return_value = array();
+		foreach ($warnings as $warning) {
+			$return_value[] = $warning->nodeValue;
+		} // end for each warning
+		
+		return $return_value;
+	} // end function getWarnings()
 	
 	/**
 	 * Builds the XML used to make the request
@@ -70,9 +206,10 @@ class UpsAPI_RatesAndService extends UpsAPI {
 		$rate->setAttributeNode(new DOMAttr('xml:lang', 'en-US'));
 		
 		// create the child elements
-		$requst = $this->buildRequest_RequestElement($rate_element,
+		$requst = $this->buildRequest_RequestElement($rate,
 			'Rate', 'Rate', $customer_context);
 		$shipment = $rate->appendChild(new DOMElement('Shipment'));
+		
 		$return_value =
 			'<?xml version="1.0"?>
 <RatingServiceSelectionRequest xml:lang="en-US">
@@ -148,6 +285,19 @@ class UpsAPI_RatesAndService extends UpsAPI {
 	        	<Weight>10</Weight>
       		</PackageWeight>   
    	</Package>
+   	<Package>
+      		<PackagingType>
+	        	<Code>02</Code>
+        		<Description>Customer Supplied</Description>
+      		</PackagingType>
+      		<Description>Rate</Description>
+      		<PackageWeight>
+      			<UnitOfMeasurement>
+      			  <Code>LBS</Code>
+      			</UnitOfMeasurement>
+	        	<Weight>100</Weight>
+      		</PackageWeight>   
+   	</Package>
     <ShipmentServiceOptions>
       <OnCallAir>
 		<Schedule> 
@@ -161,6 +311,18 @@ class UpsAPI_RatesAndService extends UpsAPI {
 		
 		return parent::buildRequest().$return_value;
 	} // end function buildRequest()
+	
+	/**
+	 * Returns the name of the servies response root node
+	 * 
+	 * @access protected
+	 * @return string
+	 * 
+	 * @todo remove after phps self scope has been fixed
+	 */
+	protected function getRootNodeName() {
+		return self::NODE_NAME_ROOT_NODE;
+	} // end function getRootNodeName()
 } // end class UpsAPI_RatesAndService
 
 ?>

@@ -44,6 +44,10 @@ if (!empty($_POST['submit']))
 		echo 'Response Output:<br />';
 		echo '<pre>'.htmlentities($response).'</pre>';
 	} // end else the output type is XML
+	
+	var_dump($rate->getWarnings());
+	var_dump($rate->getPackageCharges());
+	var_dump($rate->getShipmentCharges());
 } // end if the form has been submitted
 else
 {
