@@ -168,6 +168,8 @@ abstract class UpsAPI {
 	 * buildRequest() method
 	 * @params boool $return_raw_xml whether or not to return the raw XML from
 	 * the request
+	 * 
+	 * @todo remove array creation after switching over to xpath
 	 */
 	public function sendRequest($request_xml, $return_raw_xml = false) {
 		require_once 'XML/Unserializer.php';
@@ -182,6 +184,7 @@ abstract class UpsAPI {
 		));
 		$response = file_get_contents($this->server, false, $context);
 		
+		// TODO: remove array creation after switching over to xpath
 		// create an array from the raw XML data
 		$unserializer = new XML_Unserializer(array('returnResult' => true));
 		$this->response_array = $unserializer->unserialize($response);
