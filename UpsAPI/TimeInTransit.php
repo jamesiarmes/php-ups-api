@@ -40,6 +40,13 @@
  */
 class UpsAPI_TimeInTransit extends UpsAPI {
 	/**
+	 * Node name for the root node
+	 * 
+	 * @var string
+	 */
+	const NODE_NAME_ROOT_NODE = '';
+	
+	/**
 	 * Request data
 	 * 
 	 * @access protected
@@ -92,8 +99,7 @@ class UpsAPI_TimeInTransit extends UpsAPI {
 	 * @param array|string $cutomer_context customer data
 	 * @return string $return_value request XML
 	 */
-	public function buildRequest($customer_context = null)
-	{
+	public function buildRequest($customer_context = null) {
 		/** create DOMDocument objects **/
 		$transit_dom = new DOMDocument('1.0');
 		
@@ -193,30 +199,26 @@ class UpsAPI_TimeInTransit extends UpsAPI {
 				$this->data['pickup_date']));
 		
 		// create the MaximumListSize element if a value was passd in
-		if (!empty($this->data['max_list_size']))
-		{
+		if (!empty($this->data['max_list_size'])) {
 			$transit_element->appendChild(
 				new DOMElement('MaximumListSize',
 					$this->data['max_list_size']));
 		} // end if a maximum list size was set
 		
 		// create the InvoiceLineTotal element if a value was passed in
-		if (!empty($this->data['invoice']))
-		{
+		if (!empty($this->data['invoice'])) {
 			$invoice_element = $transit_element->appendChild(
 				new DOMElement('InvoiceLineTotal'));
 			
 			// check if a currency code was passed in
-			if (!empty($this->data['invoice']['currency_code']))
-			{
+			if (!empty($this->data['invoice']['currency_code'])) {
 				$invoice_element->appendChild(
 					new DOMElement('CurrencyCode',
 						$this->data['invoice']['currency_code']));
 			} // end if a currency code was passed in
 			
 			// check if a monetary value was passed in
-			if (!empty($this->data['invoice']['monetary_value']))
-			{
+			if (!empty($this->data['invoice']['monetary_value'])) {
 				$invoice_element->appendChild(
 					new DOMElement('MonetaryValue',
 						$this->data['invoice']['monetary_value']));
@@ -230,31 +232,27 @@ class UpsAPI_TimeInTransit extends UpsAPI {
 				new DOMElement('ShipmentWeight'));
 			
 			// check if unit of measure data was passed in
-			if (!empty($this->data['weight']['unit_of_measure']))
-			{
+			if (!empty($this->data['weight']['unit_of_measure'])) {
 				$um_element = $weight_element->appendChild(
 					new DOMElement('UnitOfMeasurement'));
 			} // end if unit of measure was passed in
 
 			// check if a unit of measure code was passed in
-			if (!empty($this->data['weight']['unit_of_measure']['code']))
-			{
+			if (!empty($this->data['weight']['unit_of_measure']['code'])) {
 				$um_element->appendChild(
 					new DOMElement('Code',
 						$this->data['weight']['unit_of_measure']['code']));
 			} // end if a unit of measure code was passed in
 			
 			// check if a monetary value was passed in
-			if (!empty($this->data['weight']['unit_of_measure']))
-			{
+			if (!empty($this->data['weight']['unit_of_measure'])) {
 				$um_element->appendChild(
 					new DOMElement('Description',
 						$this->data['weight']['unit_of_measure']['code']));
 			} // end if a monetary value was passed in
 			
 			// check if a monetary value was passed in
-			if (!empty($this->data['weight']['weight']))
-			{
+			if (!empty($this->data['weight']['weight'])) {
 				$weight_element->appendChild(
 					new DOMElement('Weight',
 						$this->data['weight']['weight']));
@@ -281,21 +279,18 @@ class UpsAPI_TimeInTransit extends UpsAPI {
 	 * @access public
 	 * @return array $return_value returned services
 	 */
-	public function getServices()
-	{
+	public function getServices() {
 		$services = $this->response_array['TransitResponse']
 			['ServiceSummary'];
 		$return_value = array();
 		
 		// check to make sure we have services
-		if (empty($services))
-		{
+		if (empty($services)) {
 			return $resturn_value;
 		} // end if no services were returned
 		
 		// iterate over each of the services
-		foreach ($services as $service)
-		{
+		foreach ($services as $service) {
 			$service_array = array(
 				'code' => $service['Service']['Code'],
 				'description' => $service['Service']
@@ -322,6 +317,18 @@ class UpsAPI_TimeInTransit extends UpsAPI {
 		
 		return $return_value;
 	} // end function getServices()
+	
+	/**
+	 * Returns the name of the servies response root node
+	 * 
+	 * @access protected
+	 * @return string
+	 * 
+	 * @todo remove after phps self scope has been fixed
+	 */
+	protected function getRootNodeName() {
+		return self::NODE_NAME_ROOT_NODE;
+	} // end function getRootNodeName()
 } // end class UpsAPI_TimeInTransit
 
 ?>

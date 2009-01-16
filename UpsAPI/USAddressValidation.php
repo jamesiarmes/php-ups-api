@@ -39,6 +39,13 @@
  */
 class UpsAPI_USAddressValidation extends UpsAPI {
 	/**
+	 * Node name for the root node
+	 * 
+	 * @var string
+	 */
+	const NODE_NAME_ROOT_NODE = '';
+	
+	/**
 	 * Shipping address that we are to validate
 	 * 
 	 * @access protected
@@ -66,8 +73,7 @@ class UpsAPI_USAddressValidation extends UpsAPI {
 	 * @access public
 	 * @return string the current city
 	 */
-	public function getCity()
-	{
+	public function getCity() {
 		return $this->address['city'];
 	} // end function getCity()
 	
@@ -77,8 +83,7 @@ class UpsAPI_USAddressValidation extends UpsAPI {
 	 * @access public
 	 * @param string $city city to set on the object
 	 */
-	public function setCity($city)
-	{
+	public function setCity($city) {
 		$this->address['city'] = $city;
 		
 		return true;
@@ -90,8 +95,7 @@ class UpsAPI_USAddressValidation extends UpsAPI {
 	 * @access public
 	 * @return array the current address
 	 */
-	public function getFullAddress()
-	{
+	public function getFullAddress() {
 		return $this->address;
 	} // end function getFullAddress()
 	
@@ -101,8 +105,7 @@ class UpsAPI_USAddressValidation extends UpsAPI {
 	 * @access public
 	 * @param array $address address to set on the object
 	 */
-	public function setFullAddress($address)
-	{
+	public function setFullAddress($address) {
 		$this->address = $address;
 		
 		return true;
@@ -114,8 +117,7 @@ class UpsAPI_USAddressValidation extends UpsAPI {
 	 * @access public
 	 * @return string the current state
 	 */
-	public function getState()
-	{
+	public function getState() {
 		return $this->address['state'];
 	} // end function getState()
 	
@@ -125,8 +127,7 @@ class UpsAPI_USAddressValidation extends UpsAPI {
 	 * @access public
 	 * @param string $state state to set on the object
 	 */
-	public function setState($state)
-	{
+	public function setState($state) {
 		$this->address['state'] = $state;
 		
 		return true;
@@ -138,8 +139,7 @@ class UpsAPI_USAddressValidation extends UpsAPI {
 	 * @access public
 	 * @return integer the curret zip code
 	 */
-	public function getZipCode()
-	{
+	public function getZipCode() {
 		return $this->address['zip_code'];
 	} // end function getZipCode()
 	
@@ -149,8 +149,7 @@ class UpsAPI_USAddressValidation extends UpsAPI {
 	 * @access public
 	 * @param integer $zip_code zip code to set on the object
 	 */
-	public function setZipCode($zip_code)
-	{
+	public function setZipCode($zip_code) {
 		$this->address['zip_code'] = $zip_code;
 	} // end function setZipCode()
 	
@@ -164,8 +163,7 @@ class UpsAPI_USAddressValidation extends UpsAPI {
 	 * @param array|string $cutomer_context customer data
 	 * @return string $return_value request XML
 	 */
-	public function buildRequest($customer_context = null)
-	{
+	public function buildRequest($customer_context = null) {
 		/** create DOMDocument objects **/
 		$address_dom = new DOMDocument('1.0');
 		
@@ -205,27 +203,23 @@ class UpsAPI_USAddressValidation extends UpsAPI {
 	 * @param string $match_type type of match returned by getMatchType()
 	 * @return array $return_value array of matches
 	 */
-	public function getMatches($match_type = null)
-	{
+	public function getMatches($match_type = null) {
 		$return_value = array();
 		
 		// check if a valid match type was passed in
 		$valid_match = $this->validateMatchType($match_type);
-		if (empty($match_type))
-		{
+		if (empty($match_type)) {
 			$match_type = $this->getMatchType();
 		} // end if no valid match type was passed in
 		
 		// check if there are any matches
-		if ($match_type == 'None')
-		{
+		if ($match_type == 'None') {
 			return $return_value;
 		} // end if there are not matches
 		
 		// check if we only have one match
 		$match_array = $this->response_array['AddressValidationResult'];
-		if (!isset($match_array[0]))
-		{
+		if (!isset($match_array[0])) {
 			$return_value[0] = array(
 				'quality' => $match_array['Quality'],
 				'address' => array(
@@ -236,11 +230,9 @@ class UpsAPI_USAddressValidation extends UpsAPI {
 				'zip_code_high' => $match_array['PostalCodeHighEnd'],
 			); // end $return_value
 		} // end if we only have one match
-		else
-		{
+		else {
 			// iterate over the matches
-			foreach ($match_array as $current_match)
-			{
+			foreach ($match_array as $current_match) {
 				$return_value[] = array(
 					'quality' => $current_match['Quality'],
 					'address' => array(
@@ -263,17 +255,14 @@ class UpsAPI_USAddressValidation extends UpsAPI {
 	 * @return string $return_value whether or not a full or partial match was
 	 * found
 	 */
-	public function getMatchType()
-	{
+	public function getMatchType() {
 		// check if we received any matched
-		if (!isset($this->response_array['AddressValidationResult']))
-		{
+		if (!isset($this->response_array['AddressValidationResult'])) {
 			return 'None';
 		} // end if we received no matches
 		
 		$match_array = $this->response_array['AddressValidationResult'];
-		switch ($match_array)
-		{
+		switch ($match_array) {
 			case isset($match_array['Quality'])
 				&& $match_array['Quality'] == '1.0':
 				
@@ -288,10 +277,8 @@ class UpsAPI_USAddressValidation extends UpsAPI {
 			case sizeof($match_array) > 1:
 				
 				// iterate over the results to see if we have an exact match
-				foreach ($match_array as $result)
-				{
-					if ($result['Quality'] == '1.0')
-					{
+				foreach ($match_array as $result) {
+					if ($result['Quality'] == '1.0') {
 						$return_value = 'Multiple With Exact';
 						break(2);
 					} // end if the match is an exact
@@ -310,14 +297,25 @@ class UpsAPI_USAddressValidation extends UpsAPI {
 	} // end function getMatchType()
 	
 	/**
+	 * Returns the name of the servies response root node
+	 * 
+	 * @access protected
+	 * @return string
+	 * 
+	 * @todo remove after phps self scope has been fixed
+	 */
+	protected function getRootNodeName() {
+		return self::NODE_NAME_ROOT_NODE;
+	} // end function getRootNodeName()
+	
+	/**
 	 * Checks a match type to see if it is valid
 	 * 
 	 * @access protected
 	 * @param string $match_type match type to validate
 	 * @return bool whether or not the match type is valid
 	 */
-	protected function validateMatchType($match_type)
-	{
+	protected function validateMatchType($match_type) {
 		// declare the valid match types
 		$valid_match_types = array('Exact', 'None', 'Partial',
 			'Multiple With Exact', 'Multiple Partial');

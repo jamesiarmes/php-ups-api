@@ -39,6 +39,13 @@
  */
 class UpsAPI_Tracking extends UpsAPI {
 	/**
+	 * Node name for the root node
+	 * 
+	 * @var string
+	 */
+	const NODE_NAME_ROOT_NODE = '';
+	
+	/**
 	 * Array of inquiry data
 	 * 
 	 * @access protected
@@ -76,8 +83,7 @@ class UpsAPI_Tracking extends UpsAPI {
 	 * @access public
 	 * @return string the current tracking number
 	 */
-	public function getTrackingNumber()
-	{
+	public function getTrackingNumber() {
 		return $this->tracking_number;
 	} // end function getTrackingNumber()
 	
@@ -87,8 +93,7 @@ class UpsAPI_Tracking extends UpsAPI {
 	 * @access public
 	 * @param string $value numeric tracking number
 	 */
-	public function setTrackingNumber($value)
-	{
+	public function setTrackingNumber($value) {
 		$this->tracking_number = $value;
 			
 		return true;
@@ -104,8 +109,7 @@ class UpsAPI_Tracking extends UpsAPI {
 	 * @param array|string $cutomer_context customer data
 	 * @return string $return_value request XML
 	 */
-	public function buildRequest($customer_context = null)
-	{
+	public function buildRequest($customer_context = null) {
 		/** create DOMDocument objects **/
 		$xml = new DOMDocument('1.0');
 		
@@ -118,15 +122,13 @@ class UpsAPI_Tracking extends UpsAPI {
 		// create the child elements
 		$request_element = $this->buildRequest_RequestElement($track_element,
 			'Track', 'activity', $customer_context);
-		if (!empty($this->tracking_number))
-		{
+		if (!empty($this->tracking_number)) {
 			$track_element->appendChild(
 				new DOMElement('TrackingNumber', $this->tracking_number));
 		} // end if we have a tracking number
 		
 		// check to see if we have inquiry data
-		if (!empty($this->inquiry_array))
-		{
+		if (!empty($this->inquiry_array)) {
 			$reference_numer = $this->buildRequest_Inquiry($track_element);
 		} // end if we have inquiry data
 		
@@ -139,8 +141,7 @@ class UpsAPI_Tracking extends UpsAPI {
 	 * @access public
 	 * @return integer $return_value number of packages for this tracking number
 	 */
-	public function getNumberOfPackages()
-	{
+	public function getNumberOfPackages() {
 		$return_value = count(
 			$this->response_array['Shipment']['Package']['Activity']);
 		
@@ -153,14 +154,12 @@ class UpsAPI_Tracking extends UpsAPI {
 	 * @access public
 	 * @return array $return_value status of each package
 	 */
-	public function getPackageStatus()
-	{
+	public function getPackageStatus() {
 		$return_value = array();
 		
 		// iterate over the packages and create a status array for each
 		$packages = $this->response_array['Shipment']['Package']['Activity'];
-		foreach ($packages as $key => $current_package)
-		{
+		foreach ($packages as $key => $current_package) {
 			$status_type = $current_package['Status']['StatusType'];
 			$return_value[$key] = array(
 				'code' => $status_type['Code'],
@@ -176,17 +175,14 @@ class UpsAPI_Tracking extends UpsAPI {
 	 * 
 	 * @return array $return_value array of address information
 	 */
-	public function getShippingAddress()
-	{
+	public function getShippingAddress() {
 		$return_value = array();
 		
 		// get the address and iterate over its parts
 		$address = $this->response_array['Shipment']['ShipTo']['Address'];
-		foreach($address as $key => $address_part)
-		{
+		foreach($address as $key => $address_part) {
 			// check which address part this is
-			switch ($key)
-			{
+			switch ($key) {
 				case 'AddressLine1':
 					
 					$return_value['address1'] = $address_part;
@@ -265,6 +261,18 @@ class UpsAPI_Tracking extends UpsAPI {
 		
 		return $reference_number;
 	} // end function buildRequest_Inquiry()
+	
+	/**
+	 * Returns the name of the servies response root node
+	 * 
+	 * @access protected
+	 * @return string
+	 * 
+	 * @todo remove after phps self scope has been fixed
+	 */
+	protected function getRootNodeName() {
+		return self::NODE_NAME_ROOT_NODE;
+	} // end function getRootNodeName()
 } // end class UpsAPI_Tracking
 
 ?>
