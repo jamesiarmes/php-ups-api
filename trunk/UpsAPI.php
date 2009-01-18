@@ -45,10 +45,24 @@ require_once 'inc/config.php';
  */
 abstract class UpsAPI {
 	/**
+	 * Status code for a failed request
+	 * 
+	 * @var integer
+	 */
+	const RESPONSE_STATUS_CODE_FAIL = 0;
+	
+	/**
+	 * Status code for a successful request
+	 * 
+	 * @var integer
+	 */
+	const RESPONSE_STATUS_CODE_PASS = 1;
+	
+	/**
 	 * Access key provided by UPS
 	 * 
 	 * @access protected
-	 * @param string
+	 * @var string
 	 */
 	protected $access_key;
 	
@@ -56,7 +70,7 @@ abstract class UpsAPI {
 	 * Developer key provided by UPS
 	 * 
 	 * @access protected
-	 * @param string
+	 * @var string
 	 */
 	protected $developer_key;
 	
@@ -64,7 +78,7 @@ abstract class UpsAPI {
 	 * Password used to access UPS Systems
 	 * 
 	 * @access protected
-	 * @param string
+	 * @var string
 	 */
 	protected $password;
 	
@@ -96,7 +110,7 @@ abstract class UpsAPI {
 	 * UPS Server to send Request to
 	 * 
 	 * @access protected
-	 * @param string
+	 * @var string
 	 */
 	protected $server;
 	
@@ -104,7 +118,7 @@ abstract class UpsAPI {
 	 * Username used to access UPS Systems
 	 * 
 	 * @access protected
-	 * @param string
+	 * @var string
 	 */
 	protected $username;
 	
@@ -158,7 +172,50 @@ abstract class UpsAPI {
 			new DOMElement('Password', $this->password));
 		
 		return $access_dom->saveXML();
-	}
+	} // end function buildRequest()
+	
+	/**
+	 * Returns the error message(s) from the response
+	 * 
+	 * @return array
+	 */
+	public function getError() {
+		// iterate over the error messages
+		$errors = $this->xpath->query('Response/Error', $this->root_node);
+		$return_value = array();
+		foreach ($errors as $error) {
+			$return_value[] = array(
+				'severity' => $this->xpath->query('ErrorSeverity', $error)
+					->item(0)->nodeValue,
+				'code' => $this->xpath->query('ErrorCode', $error)
+					->item(0)->nodeValue,
+				'description' => $this->xpath->query('ErrorDescription', $error)
+					->item(0)->nodeValue,
+				'location' => $this->xpath
+					->query('ErrorLocation/ErrorLocationElementName', $error)
+					->item(0)->nodeValue,
+			); // end $return_value
+		} // end for each error message
+		
+		return $return_value;
+	} // end function getError()
+	
+	/**
+	 * Checks to see if a repsonse is an error
+	 * 
+	 * @access public
+	 * @return boolean 
+	 */
+	public function isError() {
+		// check to see if the request failed
+		$status = $this->xpath->query('Response/ResponseStatusCode',
+			$this->root_node);
+		if ($status->item(0)->nodeValue == self::RESPONSE_STATUS_CODE_FAIL) {
+			return true;
+		} // end if the request failed
+		
+		return false;
+	} // end function isError
 	
 	/**
 	 * Send a request to the UPS Server using xmlrpc
@@ -235,7 +292,7 @@ abstract class UpsAPI {
 		
 		// create the children of the TransactionReference element
 		$transaction_element->appendChild(
-			new DOMElement('XpciVersion', '1.0001'));
+			new DOMElement('XpciVersion', '1.0'));
 		
 		// check if we have customer data to include
 		if (!empty($customer_context)) {
