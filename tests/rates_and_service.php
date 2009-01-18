@@ -25,10 +25,89 @@
  */
 require_once dirname(__FILE__).'/../inc/config.php';
 
+$pickup_codes = array(
+	'01' => 'Daily Pickup',
+	'03' => 'Customer Counter',
+	'06' => 'One Time Pickup',
+	'07' => 'On Call Air',
+	'11' => 'Suggested Retail Rates',
+	'19' => 'Letter Center',
+	'20' => 'Air Service Center',
+); // end $pickup_codes
+
 // check if the form was submitted
 if (!empty($_POST['submit']))
 {
-	$rate = new UpsAPI_RatesAndService();
+	$shipment = array(
+		'pickup_type' => array(
+			'code' => $_POST['pickup_type'],
+			'description' => $pickup_codes[$_POST['pickup_type']],
+		),
+		'service' => $_POST['service'],
+		'packages' => array(
+			array(
+				'packaging' => array(
+					'code' => 21,
+					'description' => 'Express Box',
+				),
+				'description' => 'Package from customer',
+				'units' => 'LBS',
+				'weight' => 100.0,
+			),
+			array(
+				'packaging' => array(
+					'code' => '02',
+					'description' => 'Package',
+				),
+				'description' => 'Package from customer',
+				'units' => 'LBS',
+				'weight' => 23.6,
+			),
+		),
+		'saturday' => array(
+			'pickup' => true,
+			'deliver' => false,
+		),
+		'pickup_day' => '02',
+		'scheduling_method' => '02',
+	); // end $shipment
+	
+	$shipper = array(
+		'name' => 'Shipper Name',
+		'phone' => '1234567890',
+		'number' => null,
+		'street' => 'Address Line1',
+		'street2' => 'Address Line2',
+		'city' => 'West Chester',
+		'state' => 'PA',
+		'zip' => '19380',
+		'country' => 'US',
+	); // end $shipper
+	
+	$ship_from = array(
+		'name' => 'Ship F. Name',
+		'phone' => '1234567890',
+		'street' => 'Address Line1',
+		'street2' => 'Address Line2',
+		'street3' => 'Address Line3',
+		'city' => 'Carlisle',
+		'state' => 'PA',
+		'zip' => '17013',
+		'country' => 'US',
+	); // end $ship_from
+	
+	$destination = array(
+		'name' => 'Recipients Name',
+		'phone' => '1234567890',
+		'street' => 'Address Line',
+		'city' => 'Duncannon',
+		'state' => 'PA',
+		'zip' => '17020',
+		'country' => 'US',
+	); // end $destination
+	
+	$rate = new UpsAPI_RatesAndService($shipment, $shipper, $ship_from,
+		$destination);
 	$xml = $rate->buildRequest();
 	
 	// check the output type
@@ -45,22 +124,16 @@ if (!empty($_POST['submit']))
 		echo '<pre>'.htmlentities($response).'</pre>';
 	} // end else the output type is XML
 	
+	var_dump($rate->isError());
+	var_dump($rate->getError());
 	var_dump($rate->getWarnings());
 	var_dump($rate->getPackageCharges());
 	var_dump($rate->getShipmentCharges());
+	var_dump($rate->getPackageWeight());
+	var_dump($rate->getShipmentWeight());
 } // end if the form has been submitted
 else
 {
-	$pickup_codes = array(
-		'01' => 'Daily Pickup',
-		'03' => 'Customer Counter',
-		'06' => 'One Time Pickup',
-		'07' => 'On Call Air',
-		'11' => 'Suggested Retail Rates',
-		'19' => 'Letter Center',
-		'20' => 'Air Service Center',
-	); // end $pickup_codes
-	
 	$packaging_codes = array(
 		'00' => 'UNKNOWN',
 		'01' => 'UPS Letter',
@@ -113,14 +186,14 @@ else
 	<tbody>
 		<tr>
 			<td>
-				<label for="pickup">Pickup Type:</label>
+				<label for="pickup_type">Pickup Type:</label>
 			</td>
 			<td>
-				<select id="pickup" name="pickup">
+				<select id="pickup_type" name="pickup_type">
 					<option value="" selected="selected">Select</option>
 <?php
 	// iterate over the pickup codes
-	sort($pickup_codes);
+	asort($pickup_codes);
 	foreach ($pickup_codes as $code => $title) {
 		echo "\t\t\t\t\t".
 			'<option value="'.$code.'">'.$title.'</option>'."\n";
@@ -139,7 +212,7 @@ else
 					<option value="" selected="selected">Select</option>
 <?php
 	// iterate over the packaging codes
-	sort($packaging_codes);
+	asort($packaging_codes);
 	foreach ($packaging_codes as $code => $title) {
 		echo "\t\t\t\t\t".
 			'<option value="'.$code.'">'.$title.'</option>'."\n";
@@ -168,7 +241,7 @@ else
 					<option value="" selected="selected">Select</option>
 <?php
 	// iterate over the service codes
-	sort($service_codes);
+	asort($service_codes);
 	foreach ($service_codes as $code => $title) {
 		echo "\t\t\t\t\t".
 			'<option value="'.$code.'">'.$title.'</option>'."\n";
@@ -188,7 +261,7 @@ else
 					<option value="" selected="selected">Select</option>
 <?php
 	// iterate over the units of measurement
-	sort($weight_um);
+	asort($weight_um);
 	foreach ($weight_um as $code => $title) {
 		echo "\t\t\t\t\t".
 			'<option value="'.$code.'">'.$title.'</option>'."\n";
