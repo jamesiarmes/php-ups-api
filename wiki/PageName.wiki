@@ -121,3 +121,59 @@ array
       'service_options' => '15.00'
       'total' => '96.20'
 }}}
+
+=== ===
+*getShipmentCharges()* - Returns charges for the entire shipment
+{{{
+$rate = new UpsAPI_RatesAndService($shipment, $shipper, $ship_from, $destination);
+$xml = $rate->buildRequest($customer_data);
+
+$response = $rate->sendRequest($xml, true);
+$package_charges = $validation->getShipmentCharges();
+}}}
+Returns an array:
+{{{
+array
+  'currency_code' => 'USD'
+  'transportation' => '281.48'
+  'service_options' => '38.00'
+  'total' => '319.48'
+}}}
+
+=== ===
+*getPackageWeight()* - Returns charges for each package
+{{{
+$rate = new UpsAPI_RatesAndService($shipment, $shipper, $ship_from, $destination);
+$xml = $rate->buildRequest($customer_data);
+
+$response = $rate->sendRequest($xml, true);
+$package_charges = $validation->getPackageWeight();
+}}}
+Returns an array:
+{{{
+array
+  0 => 
+    array
+      'weight' => '100.0'
+      'units' => 'LBS'
+  1 => 
+    array
+      'weight' => '24.0'
+      'units' => 'LBS'
+}}}
+
+=== ===
+*getShipmentWeight()* - Returns billing weight for the entire shipment
+{{{
+$rate = new UpsAPI_RatesAndService($shipment, $shipper, $ship_from, $destination);
+$xml = $rate->buildRequest($customer_data);
+
+$response = $rate->sendRequest($xml, true);
+$package_charges = $validation->getShipmentWeight();
+}}}
+Returns an array:
+{{{
+array
+  'weight' => '124.0'
+  'units' => 'LBS'
+}}}
