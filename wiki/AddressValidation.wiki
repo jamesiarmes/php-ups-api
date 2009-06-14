@@ -5,7 +5,13 @@
 
 *Address Validation Example* - With Customer Name
 {{{
-$validation = new UpsAPI_Tracking($tracking_number);
+$address = array(
+    'city' => 'Duncannon',
+    'state' => 'PA',
+    'zip_code' => 17020,
+); // end address
+
+$validation = new UpsAPI_USAddressValidation($address);
 $xml = $validation->buildRequest('Customer Name');
 
 // returns an array
@@ -21,7 +27,7 @@ $customer_data = array(
     'Location' => 'Camp Hill, PA',
 ); // end $customer_data
 
-$validation = new UpsAPI_Tracking($tracking_number);
+$validation = new UpsAPI_USAddressValidation($address);
 $xml = $validation->buildRequest($customer_data);
 
 // returns XML
@@ -31,7 +37,7 @@ $response = $validation->sendRequest($xml, true);
 === ===
 *getMatchType()* - To get what type of match was returned
 {{{
-$validation = new UpsAPI_Tracking($tracking_number);
+$validation = new UpsAPI_USAddressValidation($address);
 $xml = $validation->buildRequest($customer_data);
 
 $validation->sendRequest($xml, true);
@@ -45,7 +51,7 @@ Returns a string:
 === ===
 *getMatches()* - To get the different matches
 {{{
-$validation = new UpsAPI_Tracking($tracking_number);
+$validation = new UpsAPI_USAddressValidation($address);
 $xml = $validation->buildRequest($customer_data);
 
 $validation->sendRequest($xml, true);
