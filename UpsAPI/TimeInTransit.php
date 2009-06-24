@@ -29,7 +29,6 @@
  * 
  * @author James I. Armes <jamesiarmes@gmail.com>
  * @package php_ups_api
- * @todo Implement
  */
 
 /**
