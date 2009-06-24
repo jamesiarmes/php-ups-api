@@ -221,9 +221,9 @@ abstract class UpsAPI {
 	 * Send a request to the UPS Server using xmlrpc
 	 * 
 	 * @access public
-	 * @params string $request_xml XML request from the child objects
+	 * @param string $request_xml XML request from the child objects
 	 * buildRequest() method
-	 * @params boool $return_raw_xml whether or not to return the raw XML from
+	 * @param boool $return_raw_xml whether or not to return the raw XML from
 	 * the request
 	 * 
 	 * @todo remove array creation after switching over to xpath
