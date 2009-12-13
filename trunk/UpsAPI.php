@@ -231,15 +231,23 @@ abstract class UpsAPI {
 	public function sendRequest($request_xml, $return_raw_xml = false) {
 		require_once 'XML/Unserializer.php';
 		
-		// create the context stream and make the request
-		$context = stream_context_create(array(
-			'http' => array(
-				'method' => 'POST',
-				'header' => 'Content-Type: text/xml',
-				'content' => $request_xml,
-			),
-		));
-		$response = file_get_contents($this->server, false, $context);
+		// build an array of headers to use for our request
+		$headers = array(
+			'Method: POST',
+			'Connection: Keep-Alive',
+			'User-Agent: PHP-SOAP-CURL',
+			'Content-Type: text/xml; charset=utf-8',
+		); // end $headers
+		
+		// setup the curl resource
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $this->server);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $request_xml);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		$response = curl_exec($ch);
 		
 		// TODO: remove array creation after switching over to xpath
 		// create an array from the raw XML data
