@@ -248,7 +248,12 @@ abstract class UpsAPI {
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		$response = curl_exec($ch);
-		
+
+		// check to see if the request failed
+		if ($response === false) {
+			throw new UPSException('Curl Error: "'.curl_error($ch).'"');
+		} // end if the request failed
+
 		// TODO: remove array creation after switching over to xpath
 		// create an array from the raw XML data
 		$unserializer = new XML_Unserializer(array('returnResult' => true));
