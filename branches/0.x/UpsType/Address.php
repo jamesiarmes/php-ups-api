@@ -89,7 +89,7 @@ class UpsType_Address extends UpsType {
 	protected $street3;
 	
 	/**
-	 * Constructor. Values may be bassed here on by calling the individual set
+	 * Constructor. Values may be passed here or by calling the individual set
 	 * functions.
 	 * 
 	 * @param string $street1
