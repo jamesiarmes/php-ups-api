@@ -81,7 +81,7 @@ class UpsType_Dimensions extends UpsType {
 	const UNITS_INCHES = 'IN';
 	
 	/**
-	 * Constructor. Values may be bassed here on by calling the individual set
+	 * Constructor. Values may be passed here or by calling the individual set
 	 * functions.
 	 * 
 	 * @param string $units
