@@ -131,7 +131,6 @@ class UpsType_Address extends UpsType {
 	 * Sets the first line of the address
 	 * 
 	 * @param string $value
-	 * @return string
 	 */
 	public function setAddressLineOne($value) {
 		$this->street1 = $value;
@@ -143,7 +142,6 @@ class UpsType_Address extends UpsType {
 	 * Sets the second line of the address
 	 * 
 	 * @param string $value
-	 * @return string
 	 */
 	public function setAddressLineThree($value) {
 		$this->street3 = $value;
@@ -155,7 +153,6 @@ class UpsType_Address extends UpsType {
 	 * Sets the third line of the address
 	 * 
 	 * @param string $value
-	 * @return string
 	 */
 	public function setAddressLineTwo($value) {
 		$this->street2 = $value;
@@ -167,7 +164,6 @@ class UpsType_Address extends UpsType {
 	 * Sets the city of the address
 	 * 
 	 * @param string $value
-	 * @return string
 	 */
 	public function setCity($value) {
 		$this->city = $value;
@@ -179,7 +175,6 @@ class UpsType_Address extends UpsType {
 	 * Sets the country of the address
 	 * 
 	 * @param string $value
-	 * @return string
 	 */
 	public function setCountry($value) {
 		$this->country = $value;
@@ -191,7 +186,6 @@ class UpsType_Address extends UpsType {
 	 * Sets the postal code of the address
 	 * 
 	 * @param string $value
-	 * @return string
 	 */
 	public function setPostalCode($value) {
 		$this->postal = $value;
@@ -203,7 +197,6 @@ class UpsType_Address extends UpsType {
 	 * Sets the state or province of the address
 	 * 
 	 * @param string $value
-	 * @return string
 	 */
 	public function setStateProvince($value) {
 		$this->state = $value;
