@@ -59,6 +59,20 @@ abstract class UpsAPI {
 	const RESPONSE_STATUS_CODE_PASS = 1;
 	
 	/**
+	 * URL for the UPS OnlineTools production server
+	 * 
+	 * @var string
+	 */
+	const SERVER_PRODUCTION = 'https://onlinetools.ups.com';
+	
+	/**
+	 * URL for the UPS OnlineTools customer integration environment
+	 * 
+	 * @var string
+	 */
+	const SERVER_TESTING = 'https://wwwcie.ups.com';
+	
+	/**
 	 * Access key provided by UPS
 	 * 
 	 * @access protected
@@ -134,8 +148,10 @@ abstract class UpsAPI {
 	 * Sets up the API Object
 	 * 
 	 * @access public
+	 * @param string $server what server the web service calls should be made
+	 * to. defaults to the testing server (https://wwwcie.ups.com).
 	 */
-	public function __construct() {
+	public function __construct($server = self::SERVER_TESTING) {
 		/** Set the Keys on the Object **/
 		$this->access_key = $GLOBALS['ups_api']['access_key'];
 		$this->developer_key = $GLOBALS['ups_api']['developer_key'];
@@ -144,7 +160,7 @@ abstract class UpsAPI {
 		/** Set the username and password on the Object **/
 		$this->password = $GLOBALS['ups_api']['password'];
 		$this->username = $GLOBALS['ups_api']['username'];
-	} // end funciton __construct()
+	} // end function __construct()
 	
 	/**
 	 * Builds the XML used to make the request
@@ -261,6 +277,7 @@ abstract class UpsAPI {
 		
 		// build the dom objects
 		$this->response = new DOMDocument();
+		var_dump($response);
 		$this->response->loadXML($response);
 		$this->xpath = new DOMXPath($this->response);
 		$this->root_node = $this->xpath->query(

@@ -83,6 +83,13 @@ if (!empty($_POST['submit']))
 		'zip' => '19380',
 		'country' => 'US',
 	); // end $shipper
+
+	$shipper_address = new UpsType_Address();
+	$shipper_address->setAddressLineOne('Address Line1');
+	$shipper_address->setAddressLineTwo('Address Line2');
+	$shipper_address->setCity('West Chester');
+	$shipper_address->setStateProvince('PA');
+	$shipper_address->setPostalCode('19380');
 	
 	$ship_from = array(
 		'name' => 'Ship F. Name',
