@@ -103,7 +103,6 @@ class UpsType_Address extends UpsType {
 	public function __construct($street1 = null, $street2 = null,
 		$street3 = null, $city = null, $state = null, $postal = null,
 		$country = null) {
-		
 		// set any of the values that were passed in
 		$this->street1 = $street1;
 		$this->street2 = $street2;

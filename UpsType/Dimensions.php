@@ -91,7 +91,6 @@ class UpsType_Dimensions extends UpsType {
 	 */
 	public function __construct($units = null, $length = null, $width = null,
 		$height = null) {
-		
 		// set any of the values that were passed in
 		$this->units = $units;
 		$this->length = $length;
