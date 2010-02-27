@@ -39,6 +39,27 @@
  */
 class UpsAPI_RatesAndService extends UpsAPI {
 	/**
+	 * Customer classifcation code for the "occastional" classification
+	 * 
+	 * @var string
+	 */
+	const CUSTOMER_CLASSIFICATION_CODE_OCCASIONAL = '03';
+	
+	/**
+	 * Customer classifcation code for the "retail" classification
+	 * 
+	 * @var string
+	 */
+	const CUSTOMER_CLASSIFICATION_CODE_RETAIL = '04';
+	
+	/**
+	 * Customer classifcation code for the "wholesale" classification
+	 *
+	 * @var string
+	 */
+	const CUSTOMER_CLASSIFICATION_CODE_WHOLESALE = '01';
+	
+	/**
 	 * Node name for the Monetary Value
 	 * 
 	 * @var string
@@ -58,6 +79,85 @@ class UpsAPI_RatesAndService extends UpsAPI {
 	 * @var string
 	 */
 	const NODE_NAME_ROOT_NODE = 'RatingServiceSelectionResponse';
+	
+	/**
+	 * Pickup type code for the "Air Service Center" type
+	 * 
+	 * @var string
+	 */
+	const PICKUP_CODE_AIR_SERVICE_CENTER = '20';
+	
+	/**
+	 * Pickup type code for the "Customer Counter" type
+	 * 
+	 * @var string
+	 */
+	const PICKUP_CODE_CUSTOMER_COUNTER = '03';
+	
+	/**
+	 * Pickup type code for the "Daily Pickup" type
+	 * 
+	 * @var string
+	 */
+	const PICKUP_CODE_DAILY_PICKUP = '01';
+	
+	/**
+	 * Pickup type code for the "Letter Center" type
+	 * 
+	 * @var string
+	 */
+	const PICKUP_CODE_LETTER_CENTER = '19';
+	
+	/**
+	 * Pickup type code for the "On Call Air" type
+	 * 
+	 * @var string
+	 */
+	const PICKUP_CODE_ON_CALL_AIR = '07';
+	
+	/**
+	 * Pickup type code for the "One Time Pickup" type
+	 * 
+	 * @var string
+	 */
+	const PICKUP_CODE_ONE_TIME_PICKUP = '06';
+	
+	/**
+	 * Pickup type code for the "Retail Rates" type
+	 * 
+	 * @var string
+	 */
+	const PICKUP_CODE_SUGGESTED_RETAIL_RATES = '11';
+	
+	// domestic only
+	const SERVICE_CODE_NEXT_DAY_AIR_EARLY_AM = '14';
+	const SERVICE_CODE_NEXT_DAY_AIR = '01';
+	const SERVICE_CODE_NEXT_DAY_AIR_SAVER = '13';
+	const SERVICE_CODE_SECOND_DAY_AIR_AM = '59';
+	const SERVICE_CODE_SECOND_DAY_AIR = '02';
+	const SERVICE_CODE_THREE_DAY_SELECT = '12';
+	const SERVICE_CODE_GROUND = '03';
+	
+	// international only
+	const SERVICE_CODE_STANDARD = '11';
+	const SERVICE_CODE_WORLDWIDE_EXPRESS = '07';
+	const SERVICE_CODE_WORLDWIDE_EXPRESS_PLUS = '54';
+	const SERVICE_CODE_WORLDWIDE_EXPEDITED = '08';
+	const SERVICE_CODE_SAVER = '65';
+	
+	// required for rating, ignored for shopping. poland to poland same day
+	const SERVICE_CODE_UPS_TODAY_STANDARD = '82';
+	const SERVICE_CODE_UPS_TODAY_DEDICATED_COURIER = '83';
+	const SERVICE_CODE_UPS_TODAY_INTERCITY = '84';
+	const SERVICE_CODE_UPS_TODAY_EXPRESS = '85';
+	const SERVICE_CODE_UPS_TODAY_EXPRESS_SAVER = '86';
+	
+	/**
+	 * Resource for the Rates and Service resource
+	 * 
+	 * @var string
+	 */
+	const SERVICE_RESOURCE = 'Rate';
 	
 	/**
 	 * Destination (ship to) data
@@ -107,6 +207,13 @@ class UpsAPI_RatesAndService extends UpsAPI {
 	protected $shipper = array();
 	
 	/**
+	 * Array of values to be used for the xml
+	 * 
+	 * @var array
+	 */
+	protected $values = array();
+	
+	/**
 	 * Constructor for the Object
 	 * 
 	 * @access public
@@ -115,16 +222,98 @@ class UpsAPI_RatesAndService extends UpsAPI {
 	 * @param array $ship_from array of ship from data
 	 * @param array $desination array of destination data
 	 */
-	public function __construct($shipment, $shipper, $ship_from, $desination) {
-		parent::__construct();
+	public function __construct($shipment, $shipper, $ship_from,
+		$desination, $server = self::SERVER_TESTING) {
+		parent::__construct($server);
 		
 		// set object properties
-		$this->server = $GLOBALS['ups_api']['server'].'/ups.app/xml/Rate';
+		$this->server = $server.'/ups.app/xml/'.self::SERVICE_RESOURCE;
 		$this->shipment = $shipment;
 		$this->shipper = $shipper;
 		$this->ship_from = $ship_from;
 		$this->destination = $desination;
 	} // end function __construct()
+	
+	/**
+	 * Sets the values for the customer classification node
+	 * 
+	 * @param string $code
+	 */
+	public function setCustomerClassification($code)
+	{
+		$this->values['CustomerClassification']['Code'] = $code;
+	} // end function setCustomerClassification()
+	
+	/**
+	 * Sets the values for the pickup type node
+	 * 
+	 * @param string $code one of the PICKUP_CODE_* constants
+	 */
+	public function setPickupType($code)
+	{
+		$this->values['PickupType']['Code'] = $code;
+		
+		return true;
+	} // end function setPickupType()
+	
+	/**
+	 * Sets the values for the shipment/service node
+	 * 
+	 * @param string $code one of the SERVICE_CODE_* constants
+	 * @param boolean $include_description whether or not to include the
+	 * description to make the request (and response) more human readable
+	 */
+	public function setShipment_Service($code, $include_description = true) {
+		$this->values['Shipment']['Service']['Code'] = $code;
+		$this->values['Shipment']['Service']['Description'] = '';
+		
+		return true;
+	} // end function setShipment_Service()
+	
+	/**
+	 * Sets the values for the shipment/shipper node
+	 * 
+	 * @param UpsType_Address $address
+	 * @param string $name
+	 * @param string $shipper_number
+	 */
+	public function setShipment_Shipper($address, $name = null,
+		$shipper_number = null)
+	{
+		$this->values['Shipment']['Shipper']['Name'] = $name;
+		$this->values['Shipment']['Shipper']['ShipperNumber'] = $shipper_number;
+		$this->values['Shipment']['Shipper']['Address'] = $address;
+		
+		return true;
+	} // end function setShipment_Shipper()
+	
+	/**
+	 * Sets the values for the shipment/shipfrom node
+	 * 
+	 * @param UpsType_Address $address
+	 * @param string $name
+	 */
+	public function setShipment_ShipFrom($address, $name = null)
+	{
+		$this->values['Shipment']['ShipFrom']['CompanyName'] = $name;
+		$this->values['Shipment']['ShipFrom']['Address'] = $address;
+		
+		return true;
+	} // end function setShipment_ShipFrom()
+	
+	/**
+	 * Sets the values for the shipment/shipto node
+	 * 
+	 * @param UpsType_Address $address
+	 * @param string $name
+	 */
+	public function setShipment_ShipTo($address, $name = null)
+	{
+		$this->values['Shipment']['ShipTo']['CompanyName'] = $name;
+		$this->values['Shipment']['ShipTo']['Address'] = $address;
+		
+		return true;
+	} // end function setShipment_ShipTo()
 	
 	/**
 	 * Returns charges for each package
@@ -258,8 +447,82 @@ class UpsAPI_RatesAndService extends UpsAPI {
 	 * @return string $return_value request XML
 	 */
 	public function buildRequest($customer_context = null) {
+/*		return parent::buildRequest().'<?xml version="1.0" ?>
+<RatingServiceSelectionRequest>
+<Request>
+<TransactionReference>
+<CustomerContext>Rating and Service</CustomerContext>
+<XpciVersion>1.0</XpciVersion>
+</TransactionReference>
+<RequestAction>Rate</RequestAction>
+<RequestOption>Rate</RequestOption>
+</Request>
+<PickupType>
+<Code>01</Code>
+<Description>Daily Pickup</Description>
+</PickupType>
+<Shipment>
+<Description>Rate Shopping - Domestic</Description>
+<Shipper>
+<ShipperNumber>ISGB01</ShipperNumber>
+<Address>
+<AddressLine1>Southam Rd</AddressLine1>
+<AddressLine2 />
+<AddressLine3 />
+<City>Dunchurch</City>
+<StateProvinceCode>Warwickshire</StateProvinceCode>
+<PostalCode>CV226PD</PostalCode>
+<CountryCode>GB</CountryCode>
+</Address>
+</Shipper>
+<ShipTo>
+<CompanyName>Belgium</CompanyName>
+<AttentionName>nanananan</AttentionName>
+<PhoneNumber>7777778978</PhoneNumber>
+<Address>
+<AddressLine1>5, rue de la Bataille</AddressLine1>
+<AddressLine2 />
+<AddressLine3 />
+<City>Neufchateau</City>
+<PostalCode>6840</PostalCode>
+<CountryCode>BE</CountryCode>
+</Address>
+</ShipTo>
+<ShipFrom>
+<CompanyName>Imani\'s Imaginarium</CompanyName>
+<AttentionName>AT:United Kingdom</AttentionName>
+<PhoneNumber>3057449002</PhoneNumber>
+<FaxNumber>3054439293</FaxNumber>
+<Address>
+<AddressLine1>Southam Rd</AddressLine1>
+<AddressLine2 />
+<AddressLine3 />
+<City>Dunchurch</City>
+<StateProvinceCode>Warwickshire</StateProvinceCode>
+<PostalCode>CV226PD</PostalCode>
+<CountryCode>GB</CountryCode>
+</Address>
+</ShipFrom>
+<Service><Code>65</Code></Service>
+<Package>
+<PackagingType>
+<Code>04</Code>
+<Description>UPS 25KG Box</Description>
+</PackagingType>
+<Description>Rate</Description>
+<PackageWeight>
+<UnitOfMeasurement>
+<Code>KGS</Code>
+</UnitOfMeasurement>
+<Weight>23</Weight>
+</PackageWeight>
+</Package>
+<ShipmentServiceOptions />
+</Shipment>
+</RatingServiceSelectionRequest>';*/
 		// create the new dom document
 		$xml = new DOMDocument('1.0', 'utf-8');
+//		$xml->createElementNS($namespaceURI, $qualifiedName, $value)
 		
 		
 		/** create the AddressValidationRequest element **/
@@ -278,6 +541,7 @@ class UpsAPI_RatesAndService extends UpsAPI {
 			$this->shipment['pickup_type']['code']));
 		$pickup_type->appendChild(new DOMElement('Description',
 			$this->shipment['pickup_type']['description']));
+		var_dump($this->shipment['pickup_type']);
 		
 		$shipment = $rate->appendChild(new DOMElement('Shipment'));
 		
@@ -566,6 +830,19 @@ class UpsAPI_RatesAndService extends UpsAPI {
 	protected function getRootNodeName() {
 		return self::NODE_NAME_ROOT_NODE;
 	} // end function getRootNodeName()
+	
+	/**
+	 * Returns the description for the specified service code
+	 * 
+	 * @param string $code
+	 * @return string
+	 */
+	protected function getServiceDescription($code) {
+		$services = array();
+		
+		return (isset($services[$code]) ? $services[$code]
+			: 'No Description Found');
+	} // end function getServiceDescription()
 } // end class UpsAPI_RatesAndService
 
 ?>
