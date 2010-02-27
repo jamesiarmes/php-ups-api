@@ -1,6 +1,6 @@
 <?php
 /**
- * UPS Address Type.  Makes handling of addresses easier.
+ * UPS Address Type.  Makes handling of package weight.
  * 
  * Copyright (c) 2008, James I. Armes
  * All rights reserved.
@@ -32,7 +32,7 @@
  */
 
 /**
- * UPS Address Type.  Makes handling of addresses easier.
+ * UPS Address Type.  Makes handling of package weight.
  * 
  * @author James I. Armes <jamesiarmes@gmail.com>
  * @package php_ups_api
