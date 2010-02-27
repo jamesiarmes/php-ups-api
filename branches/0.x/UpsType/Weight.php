@@ -74,7 +74,6 @@ class UpsType_Weight extends UpsType {
 	 * @param double $weight
 	 */
 	public function __construct($units = null, $weight = null) {
-		
 		// set any of the values that were passed in
 		$this->units = $units;
 		$this->weight = $weight;
