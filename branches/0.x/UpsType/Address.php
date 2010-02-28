@@ -102,7 +102,7 @@ class UpsType_Address extends UpsType {
 	 */
 	public function __construct($street1 = null, $street2 = null,
 		$street3 = null, $city = null, $state = null, $postal = null,
-		$country = null) {
+		$country = 'US') {
 		// set any of the values that were passed in
 		$this->street1 = $street1;
 		$this->street2 = $street2;
@@ -110,7 +110,7 @@ class UpsType_Address extends UpsType {
 		$this->city = $city;
 		$this->state = $state;
 		$this->postal = $postal;
-		$this->country = (isset($country) ? $country : $this->country);
+		$this->country = $country;
 	} // end function __construct()
 	
 	/**
@@ -175,7 +175,7 @@ class UpsType_Address extends UpsType {
 	 * 
 	 * @param string $value
 	 */
-	public function setCountry($value) {
+	public function setCountry($value = 'US') {
 		$this->country = $value;
 		
 		return true;
