@@ -177,27 +177,27 @@ class UpsType_PackageServiceOptions_VerbalConfirmation
 		$xml = new SimpleXMLElement('<VerbalConfirmation />');
 		
 		// check to see if we have a value for the name
-		if (isset($this->name)) {
+		if (!empty($this->name)) {
 			$xml->Name = $this->name;
 		} // end if we have a value for the name
 		
 		// check to see if we have a value for the country code
-		if (isset($this->coutry_code)) {
+		if (!empty($this->coutry_code)) {
 			$xml->StructuredPhoneNumber->PhoneCountryCode = $this->coutry_code;
 		} // end if we have a value for the country code
 		
 		// check to see if we have a value for the dial plan number
-		if (isset($this->dial_plan)) {
+		if (!empty($this->dial_plan)) {
 			$xml->StructuredPhoneNumber->PhoneDialPlanNumber = $this->dial_plan;
 		} // end if we have a value for the dial plan number
 		
 		// check to see if we have a value for the line number
-		if (isset($this->line_number)) {
+		if (!empty($this->line_number)) {
 			$xml->StructuredPhoneNumber->PhoneLineNumber = $this->line_number;
 		} // end if we have a value for the line number
 		
 		// check to see if we have a value for the extension
-		if (isset($this->extension)) {
+		if (!empty($this->extension)) {
 			$xml->StructuredPhoneNumber->PhoneExtension = $this->extension;
 		} // end if we have a value for the extension
 		

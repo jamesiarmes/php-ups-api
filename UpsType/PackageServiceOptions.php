@@ -104,7 +104,7 @@ class UpsType_PackageServiceOptions extends UpsType {
 		$xml = new SimpleXMLElement('<PackageServiceOptions />');
 		
 		// check to see if we have a value for the unit of measurement
-		if (isset($this->units)) {
+		if (!empty($this->units)) {
 			$xml->UnitOfMeasurement->Code = $this->units;
 			
 			// determine the description
@@ -117,7 +117,7 @@ class UpsType_PackageServiceOptions extends UpsType {
 		} // end if we have a value for the unit of measurement
 		
 		// check to see if we have a value for the weight
-		if (isset($this->weight)) {
+		if (!empty($this->weight)) {
 			$xml->Weight = $this->weight;
 		} // end if we have a value for the weight
 		

@@ -117,7 +117,7 @@ class UpsType_PackageServiceOptions_DeliveryConfirmation
 		$xml = new SimpleXMLElement('<DeliveryConfirmation />');
 		
 		// check to see if we have a value for the confirmation type
-		if (isset($this->type)) {
+		if (!empty($this->type)) {
 			$xml->DCISType = $this->type;
 		} // end if we have a value for the confirmation type
 		

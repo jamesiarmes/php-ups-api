@@ -152,17 +152,17 @@ class UpsType_PackageServiceOptions_COD extends UpsType_PackageServiceOptions {
 		$xml = new SimpleXMLElement('<COD />');
 		
 		// check to see if we have a value for the funds code
-		if (isset($this->funds_code)) {
+		if (!empty($this->funds_code)) {
 			$xml->CODFundsCode = $this->funds_code;
 		} // end if we have a value for the funds code
 		
 		// check to see if we have a value for the currency
-		if (isset($this->currency)) {
+		if (!empty($this->currency)) {
 			$xml->CODAmount->CurrencyCode = $this->currency;
 		} // end if we have a value for the currency
 		
 		// check to see if we have a value for the value
-		if (isset($this->value)) {
+		if (!empty($this->value)) {
 			$xml->CODAmount->MonetaryValue = $this->value;
 		} // end if we have a value for the value
 		

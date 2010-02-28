@@ -168,7 +168,7 @@ class UpsType_Dimensions extends UpsType {
 		$xml = new SimpleXMLElement('<Dimensions />');
 		
 		// check to see if we have a value for the unit of measurement
-		if (isset($this->units)) {
+		if (!empty($this->units)) {
 			$xml->UnitOfMeasurement->Code = $this->units;
 			
 			// determine the description
@@ -181,17 +181,17 @@ class UpsType_Dimensions extends UpsType {
 		} // end if we have a value for the unit of measurement
 		
 		// check to see if we have a value for the length
-		if (isset($this->length)) {
+		if (!empty($this->length)) {
 			$xml->Length = $this->length;
 		} // end if we have a value for the length
 		
 		// check to see if we have a value for the width
-		if (isset($this->width)) {
+		if (!empty($this->width)) {
 			$xml->Width = $this->width;
 		} // end if we have a value for the width
 		
 		// check to see if we have a value for the height
-		if (isset($this->height)) {
+		if (!empty($this->height)) {
 			$xml->Height = $this->height;
 		} // end if we have a value for the height
 		
