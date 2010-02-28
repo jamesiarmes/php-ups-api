@@ -216,37 +216,37 @@ class UpsType_Address extends UpsType {
 		$xml = new SimpleXMLElement('<Address />');
 		
 		// check to see if we have a value for the first line
-		if (isset($this->street1)) {
+		if (!empty($this->street1)) {
 			$xml->AddressLine1 = $this->street1;
 			
 			// check to see if we have a value for the second line
-			if (isset($this->street2)) {
+			if (!empty($this->street2)) {
 				$xml->AddressLine2 = $this->street2;
 				
 				// check to see if we have a value for the third line
-				if (isset($this->street3)) {
+				if (!empty($this->street3)) {
 					$xml->AddressLine3 = null;
 				} // end if we have a value for the third line
 			} // end if we have a value for the second line
 		} // end if we have a value for the first line
 		
 		// check to see if we have a value for the city
-		if (isset($this->city)) {
+		if (!empty($this->city)) {
 			$xml->City = $this->city;
 		} // end if we have a value for the city
 		
 		// check to see if we have a value for the state or province
-		if (isset($this->state)) {
+		if (!empty($this->state)) {
 			$xml->StateProvinceCode = $this->state;
 		} // end if we have a value for the state or province
 
 		// check to see if we have a value for the postal code
-		if (isset($this->postal)) {
+		if (!empty($this->postal)) {
 			$xml->PostalCode = $this->postal;
 		} // end if we have a value for the postal code
 
 		// check to see if we have a value for the country code
-		if (isset($this->country)) {
+		if (!empty($this->country)) {
 			$xml->CountryCode = $this->country;
 		} // end if we have a values for the country code
 		

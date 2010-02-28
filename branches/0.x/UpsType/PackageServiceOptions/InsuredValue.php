@@ -118,12 +118,12 @@ class UpsType_PackageServiceOptions_InsuredValue
 		$xml = new SimpleXMLElement('<InsuredValue />');
 		
 		// check to see if we have a value for the currency
-		if (isset($this->currency)) {
+		if (!empty($this->currency)) {
 			$xml->CurrencyCode = $this->currency;
 		} // end if we have a value for the currency
 		
 		// check to see if we have a value for the value
-		if (isset($this->value)) {
+		if (!empty($this->value)) {
 			$xml->MonetaryValue = $this->value;
 		} // end if we have a value for the value
 		
