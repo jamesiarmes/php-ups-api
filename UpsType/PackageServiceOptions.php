@@ -85,11 +85,11 @@ class UpsType_PackageServiceOptions extends UpsType {
 	 * 
 	 * @param UpsType_PackageServiceOptions_* $value
 	 */
-	public function setWeight($value) {
+	public function addServiceOption($value) {
 		$this->options[] = $value;
 		
 		return true;
-	} // end function setWeight()
+	} // end function addServiceOption()
 	
 	/**
 	 * Returns a SimpleXML Element for the type
