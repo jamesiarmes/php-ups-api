@@ -1,0 +1,10 @@
+#summary How to setup your config.php
+
+*This is currently a fragment and not fully tested.*
+
+ # Inside the inc/ directory at the root of php-ups-api, you will find config_template.php. Copy this file to config.php in the same directory.
+ # Follow the [http://forum.virtuemart.net/index.php?topic=66867.0 instruction here] to get the appropriate UPS credentials.
+ # Fill in the access key with the key you received from UPS.
+ # You may safely ignore the developer key.
+ # For the server, you will want to use "https://wwwcie.ups.com" for  development and "https://onlinetools.ups.com" for production.
+ # Fill in your UPS username and password in the appropriate places
