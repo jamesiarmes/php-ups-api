@@ -1,6 +1,6 @@
 #summary How to setup your config.php
 
-*This is currently a fragment and not fully tested.*
+Before this code will function as desire, you will need to create a config file. 
 
  # Inside the inc/ directory at the root of php-ups-api, you will find config_template.php. Copy this file to config.php in the same directory.
  # Follow the [http://forum.virtuemart.net/index.php?topic=66867.0 instruction here] to get the appropriate UPS credentials.
